@@ -6,10 +6,12 @@ import 'controllers/splash_controller.dart';
 class SplashScreen extends StatelessWidget {
   final SplashController _splashController = Get.put(SplashController());
 
+  SplashScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xff113499),
+      backgroundColor: const Color(0xff113499),
       body: Padding(
         padding: const EdgeInsets.only(top: 279),
         child: Column(
@@ -21,7 +23,7 @@ class SplashScreen extends StatelessWidget {
                 height: 195,
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
             Padding(
@@ -32,7 +34,7 @@ class SplashScreen extends StatelessWidget {
                     color: Colors.white,
                   )),
             ),
-            SizedBox(
+            const SizedBox(
               height: 300,
             ),
             Padding(
