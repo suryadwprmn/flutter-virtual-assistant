@@ -4,9 +4,6 @@ import 'package:virtual_assistant/auth/login.dart';
 import 'package:virtual_assistant/auth/register.dart';
 import 'package:virtual_assistant/routes/app_routes.dart';
 import 'package:virtual_assistant/splash_screen.dart';
-import 'package:virtual_assistant/layout/first_step.dart';
-import 'package:virtual_assistant/layout/second_step.dart';
-
 
 void main() {
   runApp(MyApp());
@@ -39,4 +36,10 @@ class MyApp extends StatelessWidget {
       getPages: AppRoutes.routes,
     );
   }
+  // @override
+  // Widget build(BuildContext context) {
+  //   return MaterialApp(
+  //     home : first_step,
+  //   );
+  // }
 }
