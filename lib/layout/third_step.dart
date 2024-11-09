@@ -1,24 +1,11 @@
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
+class ThirdStep extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: GenderSelectionScreen(),
-    );
-  }
+  _ThirdStep createState() => _ThirdStep();
 }
 
-class GenderSelectionScreen extends StatefulWidget {
-  @override
-  _GenderSelectionScreenState createState() => _GenderSelectionScreenState();
-}
-
-class _GenderSelectionScreenState extends State<GenderSelectionScreen> {
+class _ThirdStep extends State<ThirdStep> {
   String? selectedGender;
 
   @override
@@ -42,7 +29,6 @@ class _GenderSelectionScreenState extends State<GenderSelectionScreen> {
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.white, fontSize: 16),
             ),
-
             SizedBox(height: 30),
             GridView(
               shrinkWrap: true,
@@ -54,7 +40,7 @@ class _GenderSelectionScreenState extends State<GenderSelectionScreen> {
               ),
               children: [
                 buildGenderOption("Laki-Laki", "assets/man.png"),
-                buildGenderOption("assets/ladies.png","Perempuan" ),
+                buildGenderOption("Perempuan", "assets/ladies.png"),
               ],
             ),
             SizedBox(height: 30),
@@ -104,17 +90,17 @@ class _GenderSelectionScreenState extends State<GenderSelectionScreen> {
         padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
         child: Row(
           children: [
-            if (imagePath != null) // Menampilkan gambar jika ada
+            if (imagePath != null)
               ClipRRect(
-                borderRadius: BorderRadius.circular(10), // Untuk border gambar
+                borderRadius: BorderRadius.circular(10),
                 child: Image.asset(
                   imagePath,
-                  width: 60, // Lebar gambar
-                  height: 60, // Tinggi gambar
-                  fit: BoxFit.cover, // Mengisi seluruh ruang gambar
+                  width: 60,
+                  height: 60,
+                  fit: BoxFit.cover,
                 ),
               ),
-            SizedBox(width: 15), // Memberi jarak antara gambar dan teks
+            SizedBox(width: 15),
             Expanded(
               child: Text(
                 gender,
