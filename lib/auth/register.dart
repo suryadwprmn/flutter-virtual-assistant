@@ -1,140 +1,162 @@
+// screens/register.dart
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../controllers/register_controller.dart';
+import '../routes/app_routes.dart';
 
-class Register extends StatefulWidget {
-  @override
-  State<Register> createState() => _RegisterState();
-}
+class Register extends StatelessWidget {
+  final RegisterController _controller = Get.put(RegisterController());
 
-class _RegisterState extends State<Register> {
-  String? selectedGender;
-  String? selectedDiabetesCategory;
+  Register({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+      // `resizeToAvoidBottomInset` agar keyboard tidak mengganggu tampilan
+      resizeToAvoidBottomInset: true,
       body: Stack(
         children: [
-          // Gambar wave di bagian atas
+          // Top wave image
           Positioned(
             top: 0,
             left: 0,
             right: 0,
             child: Image.asset('assets/wave-atas.png', width: double.infinity),
           ),
-
-          // Mengatur Card dengan posisi lebih ke atas
+          // Menggunakan SingleChildScrollView untuk membuat konten bisa di-scroll
           Align(
             alignment: Alignment.center,
-            child: Padding(
-              padding: const EdgeInsets.only(
-                  top: 100.0, bottom: 100.0), // Adjusted padding at the bottom
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.only(top: 100.0, bottom: 100.0),
               child: Card(
-                color: Color(0xFFFFFFFF), // Set color to white
+                color: Colors.white,
                 elevation: 4,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Container(
                   width: 354,
-                  height: 621,
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Spacer(flex: 2),
-                      Image.asset('assets/logo2.png', height: 87, width: 85),
-                      SizedBox(height: 30),
+                  child: Form(
+                    key: _controller.formKey,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const SizedBox(height: 16),
+                        Image.asset('assets/logo2.png', height: 87, width: 85),
+                        const SizedBox(height: 30),
 
-                      // TextField untuk Nama
-                      TextField(
-                        decoration: InputDecoration(labelText: 'Nama'),
-                      ),
-                      SizedBox(height: 16),
+                        // Name TextField
+                        TextFormField(
+                          controller: _controller.nameController,
+                          decoration: const InputDecoration(labelText: 'Nama'),
+                          validator: (value) =>
+                              value!.isEmpty ? 'Nama tidak boleh kosong' : null,
+                        ),
+                        const SizedBox(height: 16),
 
-                      // TextField untuk Kata Sandi
-                      TextField(
-                        decoration: InputDecoration(labelText: 'Kata Sandi'),
-                        obscureText: true,
-                      ),
-                      SizedBox(height: 16),
+                        // Email TextField
+                        TextFormField(
+                          controller: _controller.emailController,
+                          decoration: const InputDecoration(labelText: 'Email'),
+                          validator: (value) => value!.isEmpty
+                              ? 'Email tidak boleh kosong'
+                              : null,
+                        ),
+                        const SizedBox(height: 16),
 
-                      // ComboBox untuk Jenis Kelamin
-                      DropdownButtonFormField<String>(
-                        value: selectedGender,
-                        decoration: InputDecoration(
-                          labelText: 'Jenis Kelamin',
+                        // Password TextField
+                        TextFormField(
+                          controller: _controller.passwordController,
+                          decoration:
+                              const InputDecoration(labelText: 'Kata Sandi'),
+                          obscureText: true,
+                          validator: (value) => value!.length < 6
+                              ? 'Kata sandi minimal 6 karakter'
+                              : null,
                         ),
-                        items: ['Laki-laki', 'Perempuan']
-                            .map((gender) => DropdownMenuItem(
-                                  value: gender,
-                                  child: Text(gender),
-                                ))
-                            .toList(),
-                        onChanged: (value) {
-                          setState(() {
-                            selectedGender = value;
-                          });
-                        },
-                      ),
-                      SizedBox(height: 16),
+                        const SizedBox(height: 16),
 
-                      // ComboBox untuk Kategori Diabetes
-                      DropdownButtonFormField<String>(
-                        value: selectedDiabetesCategory,
-                        decoration: InputDecoration(
-                          labelText: 'Kategori Diabetes',
+                        // Gender Dropdown
+                        DropdownButtonFormField<String>(
+                          value: _controller.selectedGender,
+                          decoration: const InputDecoration(
+                            labelText: 'Jenis Kelamin',
+                          ),
+                          items: ['Laki-laki', 'Perempuan']
+                              .map((gender) => DropdownMenuItem(
+                                    value: gender,
+                                    child: Text(gender),
+                                  ))
+                              .toList(),
+                          onChanged: (value) {
+                            _controller.selectedGender = value;
+                          },
                         ),
-                        items: ['Non Diabetes', 'Diabetes 1', 'Diabetes 2']
-                            .map((category) => DropdownMenuItem(
-                                  value: category,
-                                  child: Text(category),
-                                ))
-                            .toList(),
-                        onChanged: (value) {
-                          setState(() {
-                            selectedDiabetesCategory = value;
-                          });
-                        },
-                      ),
-                      SizedBox(height: 16),
-                      TextField(
-                        keyboardType: TextInputType.phone,
-                        decoration: InputDecoration(
-                          labelText: 'Nomor Telepon',
-                        ),
-                      ),
-                      SizedBox(height: 24),
+                        const SizedBox(height: 16),
 
-                      // Tombol Buat Akun
-                      ElevatedButton(
-                        onPressed: () {
-                          // Fungsi untuk membuat akun
-                        },
-                        child: Text(
-                          'Buat Akun',
-                          style: TextStyle(color: Colors.white),
+                        // Diabetes Category Dropdown
+                        DropdownButtonFormField<String>(
+                          value: _controller.selectedDiabetesCategory,
+                          decoration: const InputDecoration(
+                            labelText: 'Kategori Diabetes',
+                          ),
+                          items: ['Non Diabetes', 'Diabetes 1', 'Diabetes 2']
+                              .map((category) => DropdownMenuItem(
+                                    value: category,
+                                    child: Text(category),
+                                  ))
+                              .toList(),
+                          onChanged: (value) {
+                            _controller.selectedDiabetesCategory = value;
+                          },
                         ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Color(0xFF113499),
-                          minimumSize: Size(200, 50),
+                        const SizedBox(height: 16),
+
+                        // Phone TextField
+                        TextFormField(
+                          controller: _controller.phoneController,
+                          keyboardType: TextInputType.phone,
+                          decoration: const InputDecoration(
+                            labelText: 'Nomor Telepon',
+                          ),
                         ),
-                      ),
-                      Spacer(flex: 2),
-                    ],
+                        const SizedBox(height: 24),
+
+                        // Register Button
+                        ElevatedButton(
+                          onPressed: _controller.registerUser,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF113499),
+                            minimumSize: const Size(200, 50),
+                          ),
+                          child: const Text(
+                            'Buat Akun',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Get.toNamed(AppRoutes.login);
+                          },
+                          child: Text(
+                            'Sudah punya akun? Login',
+                            style: GoogleFonts.poppins(
+                              fontSize: 12,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
           ),
-
-          // Positioned(
-          //   bottom: 0,
-          //   left: 0,
-          //   right: 0,
-          //   child: Image.asset('assets/wave-bawah.png', width: double.infinity),
-          // ),
         ],
       ),
     );
