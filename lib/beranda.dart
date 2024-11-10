@@ -67,7 +67,7 @@ class Beranda extends StatelessWidget {
                       // Doctor image
                       Image.asset(
                         'assets/davi-kiri.png',
-                        height: 150,
+                        height: 180,
                         width: 150,
                       ),
                     ],

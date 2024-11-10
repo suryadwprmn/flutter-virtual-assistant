@@ -18,4 +18,12 @@ class MyApp extends StatelessWidget {
       getPages: AppRoutes.routes,
     );
   }
+
+  // @override
+  // Widget build(BuildContext context) {
+  //   return MaterialApp(
+  //     title: 'Virtual Assistant',
+  //     home: FirstStep(),
+  //   );
+  // }
 }

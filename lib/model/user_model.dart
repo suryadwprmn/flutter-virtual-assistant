@@ -11,6 +11,7 @@ class UserModel {
   String gender;
   String diabetesCategory;
   String phone;
+  // String? accessToken;
 
   UserModel({
     required this.name,
@@ -19,6 +20,7 @@ class UserModel {
     required this.gender,
     required this.diabetesCategory,
     required this.phone,
+    // this.accessToken,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
@@ -28,6 +30,7 @@ class UserModel {
         gender: json["gender"],
         diabetesCategory: json["diabetes_category"],
         phone: json["phone"],
+        // accessToken: json["access_token"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -37,5 +40,6 @@ class UserModel {
         "gender": gender,
         "diabetes_category": diabetesCategory,
         "phone": phone,
+        // if (accessToken != null) "access_token": accessToken
       };
 }
