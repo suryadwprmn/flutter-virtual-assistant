@@ -1,4 +1,3 @@
-// screens/register.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -14,7 +13,6 @@ class Register extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      // `resizeToAvoidBottomInset` agar keyboard tidak mengganggu tampilan
       resizeToAvoidBottomInset: true,
       body: Stack(
         children: [
