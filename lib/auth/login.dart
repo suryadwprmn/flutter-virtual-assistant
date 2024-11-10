@@ -4,6 +4,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:virtual_assistant/routes/app_routes.dart';
 
 class Login extends StatefulWidget {
+  const Login({super.key});
+
   @override
   State<Login> createState() => _LoginState();
 }
@@ -28,31 +30,36 @@ class _LoginState extends State<Login> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Spacer(flex: 2),
+                const Spacer(flex: 2),
                 Image.asset('assets/logo2.png', height: 87, width: 85),
-                SizedBox(height: 46),
+                const SizedBox(height: 46),
                 Text('LOGIN',
                     style: GoogleFonts.poppins(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xff113499),
+                      color: const Color(0xff113499),
                     )),
-                SizedBox(height: 65),
-                TextField(
+                const SizedBox(height: 65),
+                const TextField(
                   decoration: InputDecoration(labelText: 'Nama'),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
-                TextField(
+                const TextField(
                   decoration: InputDecoration(labelText: 'Kata Sandi'),
                   obscureText: true,
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () {
-                    // Panggil fungsi login
+                    Get.toNamed(AppRoutes.home);
                   },
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: const Size(166, 27),
+                    backgroundColor:
+                        const Color(0xff113499), // Warna latar belakang tombol
+                  ),
                   child: Text(
                     'LOGIN',
                     style: GoogleFonts.poppins(
@@ -61,13 +68,8 @@ class _LoginState extends State<Login> {
                       color: Colors.white,
                     ),
                   ),
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: Size(166, 27),
-                    backgroundColor:
-                        Color(0xff113499), // Warna latar belakang tombol
-                  ),
                 ),
-                SizedBox(height: 40),
+                const SizedBox(height: 40),
                 TextButton(
                   onPressed: () {
                     Get.toNamed(AppRoutes.register);
@@ -91,9 +93,9 @@ class _LoginState extends State<Login> {
                   onPressed: () {
                     // Login menggunakan Google
                   },
-                  icon: Icon(Icons.login, color: Colors.blue),
+                  icon: const Icon(Icons.login, color: Colors.blue),
                 ),
-                Spacer(flex: 2),
+                const Spacer(flex: 2),
               ],
             ),
           ),

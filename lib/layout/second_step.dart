@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class TwoStep extends StatefulWidget {
+  const TwoStep({super.key});
+
   @override
   _MyAppState createState() => _MyAppState();
 }
@@ -11,7 +13,7 @@ class _MyAppState extends State<TwoStep> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF0A459F), // Warna latar belakang biru
+      backgroundColor: const Color(0xFF0A459F), // Warna latar belakang biru
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -20,7 +22,7 @@ class _MyAppState extends State<TwoStep> {
             Align(
               alignment: Alignment.centerLeft,
               child: IconButton(
-                icon: Icon(Icons.arrow_back, color: Colors.white),
+                icon: const Icon(Icons.arrow_back, color: Colors.white),
                 onPressed: () {
                   // Aksi kembali, bisa dikosongkan atau tambahkan navigasi
                 },
@@ -28,12 +30,12 @@ class _MyAppState extends State<TwoStep> {
             ),
 
             // Jarak antara ikon kembali dan teks
-            Padding(
+            const Padding(
               padding: EdgeInsets.only(top: 10),
             ),
 
             // Teks deskripsi di atas grid
-            Center(
+            const Center(
               child: Text(
                 'Sebelum berkenalan Davi ingin\n'
                 'tau Tipe Diabetes anda',
@@ -42,7 +44,7 @@ class _MyAppState extends State<TwoStep> {
               ),
             ),
 
-            SizedBox(height: 20), // Jarak antara teks dan grid
+            const SizedBox(height: 20), // Jarak antara teks dan grid
 
             // Flexible widget untuk grid pilihan
             Flexible(
@@ -66,7 +68,7 @@ class _MyAppState extends State<TwoStep> {
                         });
                       },
                       child: Container(
-                        margin: EdgeInsets.only(bottom: 20),
+                        margin: const EdgeInsets.only(bottom: 20),
                         decoration: BoxDecoration(
                           color: selectedIndex == index
                               ? Colors
@@ -74,13 +76,13 @@ class _MyAppState extends State<TwoStep> {
                               : Colors.white,
                           borderRadius: BorderRadius.circular(20),
                         ),
-                        padding: EdgeInsets.all(16),
+                        padding: const EdgeInsets.all(16),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
                               titles[index],
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.black,
@@ -88,12 +90,12 @@ class _MyAppState extends State<TwoStep> {
                             ),
 
                             // Jarak antara judul dan deskripsi di dalam kotak
-                            SizedBox(height: 8),
+                            const SizedBox(height: 8),
 
                             Text(
                               descriptions[index],
                               textAlign: TextAlign.center,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 14,
                                 color: Colors.black87,
                               ),
@@ -107,7 +109,7 @@ class _MyAppState extends State<TwoStep> {
               ),
             ),
 
-            SizedBox(height: 20), // Jarak antara grid dan tombol
+            const SizedBox(height: 20), // Jarak antara grid dan tombol
 
             // Tombol "Ayo Kenalan" di bawah
             Padding(
@@ -118,12 +120,12 @@ class _MyAppState extends State<TwoStep> {
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
-                  padding: EdgeInsets.symmetric(vertical: 12),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
                 ),
-                child: Text(
+                child: const Text(
                   'Ayo Kenalan',
                   style: TextStyle(
                     color: Color(0xFF0A459F),
@@ -134,7 +136,7 @@ class _MyAppState extends State<TwoStep> {
               ),
             ),
 
-            SizedBox(
+            const SizedBox(
                 height:
                     20), // Jarak di bawah tombol agar tidak terlalu rapat ke bawah
           ],

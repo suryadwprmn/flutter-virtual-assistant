@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class ThirdStep extends StatefulWidget {
+  const ThirdStep({super.key});
+
   @override
   _ThirdStep createState() => _ThirdStep();
 }
@@ -16,7 +18,7 @@ class _ThirdStep extends State<ThirdStep> {
         backgroundColor: Colors.blue[900],
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {},
         ),
       ),
@@ -24,16 +26,16 @@ class _ThirdStep extends State<ThirdStep> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
+            const Text(
               "Sebelum berkenalan, Davi ingin\ntau dulu kamu?",
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.white, fontSize: 16),
             ),
-            SizedBox(height: 30),
+            const SizedBox(height: 30),
             GridView(
               shrinkWrap: true,
-              padding: EdgeInsets.symmetric(horizontal: 40),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              padding: const EdgeInsets.symmetric(horizontal: 40),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 1,
                 mainAxisSpacing: 20,
                 mainAxisExtent: 80,
@@ -43,7 +45,7 @@ class _ThirdStep extends State<ThirdStep> {
                 buildGenderOption("Perempuan", "assets/ladies.png"),
               ],
             ),
-            SizedBox(height: 30),
+            const SizedBox(height: 30),
             ElevatedButton(
               onPressed: () {
                 // Tambahkan aksi tombol di sini
@@ -53,7 +55,8 @@ class _ThirdStep extends State<ThirdStep> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
                 ),
-                padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
                 textStyle: TextStyle(
                   color: Colors.blue[900],
                   fontSize: 16,
@@ -87,7 +90,7 @@ class _ThirdStep extends State<ThirdStep> {
           color: isSelected ? Colors.grey[300] : Colors.white,
           borderRadius: BorderRadius.circular(20),
         ),
-        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
         child: Row(
           children: [
             if (imagePath != null)
@@ -100,11 +103,11 @@ class _ThirdStep extends State<ThirdStep> {
                   fit: BoxFit.cover,
                 ),
               ),
-            SizedBox(width: 15),
+            const SizedBox(width: 15),
             Expanded(
               child: Text(
                 gender,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 18,
                   color: Colors.black,
                   fontWeight: FontWeight.bold,
