@@ -29,48 +29,16 @@ class SplashScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(left: 93, right: 93),
               child: Text(
-                '“Diabetes Virtual Assistant”',
+                '"Diabetes Virtual Assistant"',
                 style: GoogleFonts.poppins(
                   fontSize: 16,
                   color: Colors.white,
                 ),
               ),
             ),
-            const SizedBox(
-              height: 20,
-            ),
-            // SingleRowScroll Section
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
-                children: List.generate(10, (index) {
-                  return Container(
-                    width: 100,
-                    height: 100,
-                    margin: const EdgeInsets.only(right: 10),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.3),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Center(
-                      child: Text(
-                        'Item $index',
-                        style: GoogleFonts.poppins(
-                          fontSize: 14,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  );
-                }),
-              ),
-            ),
-            const SizedBox(
-              height: 150,
-            ),
+            const Spacer(),
             Padding(
-              padding: const EdgeInsets.only(left: 20, right: 20),
+              padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
               child: Center(
                 child: Text(
                   'Powered by DIVISTANT',

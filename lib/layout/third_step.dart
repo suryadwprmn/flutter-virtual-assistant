@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:virtual_assistant/routes/app_routes.dart';
 
 class ThirdStep extends StatefulWidget {
   const ThirdStep({super.key});
@@ -19,7 +21,9 @@ class _ThirdStep extends State<ThirdStep> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () {},
+          onPressed: () {
+            Get.toNamed(AppRoutes.second_step);
+          },
         ),
       ),
       body: Center(

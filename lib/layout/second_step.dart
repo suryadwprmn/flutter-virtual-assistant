@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:virtual_assistant/routes/app_routes.dart';
 
 class TwoStep extends StatefulWidget {
   const TwoStep({super.key});
@@ -24,7 +26,7 @@ class _MyAppState extends State<TwoStep> {
               child: IconButton(
                 icon: const Icon(Icons.arrow_back, color: Colors.white),
                 onPressed: () {
-                  // Aksi kembali, bisa dikosongkan atau tambahkan navigasi
+                  Get.toNamed(AppRoutes.first_step);
                 },
               ),
             ),
@@ -116,7 +118,7 @@ class _MyAppState extends State<TwoStep> {
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: ElevatedButton(
                 onPressed: () {
-                  // Tambahkan aksi untuk tombol
+                  Get.toNamed(AppRoutes.third_step);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
