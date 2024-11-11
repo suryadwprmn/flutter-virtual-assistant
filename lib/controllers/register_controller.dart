@@ -32,8 +32,11 @@ class RegisterController extends GetxController {
         final response = await _registerService.registerUser(newUser);
         Get.snackbar("Success", "User registered successfully!");
 
-        // Navigate to login or home screen after successful registration
-        Get.toNamed(AppRoutes.login);
+        // Kirim data user ke FirstStep
+        Get.toNamed(AppRoutes.first_step, arguments: {
+          'name': nameController.text,
+        });
+
         clearForm();
       } catch (error) {
         Get.snackbar("Error", error.toString());
