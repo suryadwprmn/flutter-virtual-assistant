@@ -56,11 +56,11 @@ class _MyAppState extends State<TwoStep> {
                   itemCount: 3,
                   itemBuilder: (context, index) {
                     // Data tipe diabetes
-                    List<String> titles = ["Tipe 1", "Tipe 2", "Pre-Diabet"];
+                    List<String> titles = ["Tipe 1", "Tipe 2", "Non Diabetes"];
                     List<String> descriptions = [
                       "dimana kondisi Divister tidak menghasilkan insulin",
                       "dimana kondisi insulin dalam tubuh Divister kurang bekerja efektif atau tidak cukup",
-                      "kondisi ketika kadar gula darah seseorang melebihi batas normal, tetapi belum mencapai tingkat diabetes"
+                      "kondisi ketika kadar gula darah seseorang masih batas normal"
                     ];
 
                     return GestureDetector(

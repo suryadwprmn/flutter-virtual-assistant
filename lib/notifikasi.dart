@@ -15,7 +15,7 @@ class Notifikasi extends StatelessWidget {
             top: 0,
             left: 0,
             right: 0,
-            child: Container(
+            child: SizedBox(
               width: double.infinity,
               child: Image.asset(
                 'assets/wave-atas2.png',
