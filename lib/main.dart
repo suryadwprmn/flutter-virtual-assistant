@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       // Menggunakan GetMaterialApp
       title: 'Virtual Assistant',
-      initialRoute: AppRoutes.splash,
+      initialRoute: AppRoutes.login,
       getPages: AppRoutes.routes,
     );
   }
