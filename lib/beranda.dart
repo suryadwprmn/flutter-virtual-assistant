@@ -30,13 +30,13 @@ class Beranda extends StatelessWidget {
                     child: Image.asset(
                       'assets/logo3.png',
                       width: 186,
-                      height: 80,
+                      height: 70,
                     ),
                   ),
                 ),
 
                 Padding(
-                  padding: const EdgeInsets.only(left: 50, top: 20),
+                  padding: const EdgeInsets.only(left: 30, top: 20, right: 40),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
@@ -79,17 +79,17 @@ class Beranda extends StatelessWidget {
                 // Blue Card Container with fixed height and width
                 Center(
                   child: Container(
-                    width: 336,
-                    height: 340,
-                    padding: const EdgeInsets.all(16),
+                    width: 300,
+                    height: 300,
+                    padding: const EdgeInsets.all(50),
                     decoration: BoxDecoration(
                       color: const Color(0xFF113499),
                       borderRadius: BorderRadius.circular(16),
                     ),
                     child: GridView.count(
                       crossAxisCount: 2,
-                      mainAxisSpacing: 15,
-                      crossAxisSpacing: 15,
+                      mainAxisSpacing: 10,
+                      crossAxisSpacing: 10,
                       childAspectRatio: 1,
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
@@ -150,8 +150,8 @@ class Beranda extends StatelessWidget {
         Get.toNamed(route);
       },
       child: Container(
-        width: 40,
-        height: 40,
+        width: 20,
+        height: 20,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),

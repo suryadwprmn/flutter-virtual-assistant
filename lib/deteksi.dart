@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:virtual_assistant/routes/app_routes.dart';
 
 class Deteksi extends StatelessWidget {
-  const Deteksi({Key? key}) : super(key: key);
+  const Deteksi({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -56,14 +56,13 @@ class Deteksi extends StatelessWidget {
                             color: Colors.grey[300],
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: Icon(Icons.add, size: 48, color: Colors.grey),
+                          child: const Icon(Icons.add, size: 48, color: Colors.grey),
                         ),
                         const SizedBox(height: 16),
                         ElevatedButton(
                           onPressed: () {
                 
                           },
-                          child: const Text('Upload File'),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(
                                 0xFF1a237e), // Updated to `backgroundColor`
@@ -71,6 +70,7 @@ class Deteksi extends StatelessWidget {
                               borderRadius: BorderRadius.circular(8),
                             ),
                           ),
+                          child: const Text('Upload File'),
                         ),
                       ],
                     ),

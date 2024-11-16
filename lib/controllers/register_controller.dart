@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../model/user_model.dart';
-import '../services/register_service.dart';
+import '../services/auth_service.dart';
 import '../routes/app_routes.dart';
 
 class RegisterController extends GetxController {
   final formKey = GlobalKey<FormState>();
-  final RegisterService _registerService = RegisterService();
-
+  final AuthService _authService = AuthService();
   final nameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
@@ -29,7 +28,7 @@ class RegisterController extends GetxController {
           phone: phoneController.text,
         );
 
-        final response = await _registerService.registerUser(newUser);
+        final response = await _authService.register(newUser);
         Get.snackbar("Success", "User registered successfully!");
 
         // Kirim data user ke FirstStep

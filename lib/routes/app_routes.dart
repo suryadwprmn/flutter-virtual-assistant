@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:virtual_assistant/auth/login.dart';
 import 'package:virtual_assistant/auth/register.dart';
@@ -11,6 +12,7 @@ import 'package:virtual_assistant/notifikasi.dart';
 import 'package:virtual_assistant/profile.dart';
 import 'package:virtual_assistant/splash_screen.dart';
 import 'package:virtual_assistant/layout/first_step.dart';
+import '../middleware/auth_middleware.dart';
 
 class AppRoutes {
   static const splash = '/';
@@ -33,11 +35,27 @@ class AppRoutes {
     GetPage(name: first_step, page: () => FirstStep()),
     GetPage(name: second_step, page: () => const TwoStep()),
     GetPage(name: third_step, page: () => const ThirdStep()),
-    GetPage(name: home, page: () => Beranda()),
-    GetPage(name: profile, page: () => const Profile()),
-    GetPage(name: deteksi, page: () => const Deteksi()),
-    GetPage(name: catatan_kesehatan, page: () => const CatatanKesehatan()),
-    GetPage(name: notifikasi, page: () => const Notifikasi()),
-    GetPage(name: grafik, page: () => const Grafik()),
+    GetPage(name: home, page: () => const Beranda()),
+    GetPage(
+      name: profile,
+      page: () => const Profile(),
+      middlewares: [AuthMiddleware()],
+    ),
+    GetPage(
+        name: deteksi,
+        page: () => const Deteksi(),
+        middlewares: [AuthMiddleware()]),
+    GetPage(
+        name: catatan_kesehatan,
+        page: () => const CatatanKesehatan(),
+        middlewares: [AuthMiddleware()]),
+    GetPage(
+        name: notifikasi,
+        page: () => const Notifikasi(),
+        middlewares: [AuthMiddleware()]),
+    GetPage(
+        name: grafik,
+        page: () => const Grafik(),
+        middlewares: [AuthMiddleware()]),
   ];
 }
