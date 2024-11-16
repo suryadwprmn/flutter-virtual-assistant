@@ -57,8 +57,7 @@ class _LoginState extends State<Login> {
                   },
                   style: ElevatedButton.styleFrom(
                     minimumSize: const Size(166, 27),
-                    backgroundColor:
-                        const Color(0xff113499), // Warna latar belakang tombol
+                    backgroundColor: const Color(0xff113499),
                   ),
                   child: Text(
                     'LOGIN',
