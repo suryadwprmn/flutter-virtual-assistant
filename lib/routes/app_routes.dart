@@ -39,23 +39,27 @@ class AppRoutes {
     GetPage(
       name: profile,
       page: () => const Profile(),
-      middlewares: [AuthMiddleware()],
+      // middlewares: [AuthMiddleware()],
     ),
     GetPage(
-        name: deteksi,
-        page: () => const Deteksi(),
-        middlewares: [AuthMiddleware()]),
+      name: deteksi,
+      page: () => const Deteksi(),
+      //    middlewares: [AuthMiddleware()]),
+    ),
     GetPage(
-        name: catatan_kesehatan,
-        page: () => const CatatanKesehatan(),
-        middlewares: [AuthMiddleware()]),
+      name: catatan_kesehatan,
+      page: () => const CatatanKesehatan(),
+      // middlewares: [AuthMiddleware()]),
+    ),
     GetPage(
-        name: notifikasi,
-        page: () => const Notifikasi(),
-        middlewares: [AuthMiddleware()]),
+      name: notifikasi,
+      page: () => const Notifikasi(),
+      // middlewares: [AuthMiddleware()]),
+    ),
     GetPage(
-        name: grafik,
-        page: () => const Grafik(),
-        middlewares: [AuthMiddleware()]),
+      name: grafik,
+      page: () => const Grafik(),
+      // middlewares: [AuthMiddleware()]),
+    )
   ];
 }
