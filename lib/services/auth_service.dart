@@ -1,9 +1,37 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import '../model/user_model.dart';
 
 class AuthService {
   final String _baseUrl = 'http://127.0.0.1:5000/api';
+  static const String TOKEN_KEY = 'access_token';
+  static const String USER_KEY = 'user_data';
+
+  // Fungsi untuk menyimpan token
+  Future<void> _saveToken(String token) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(TOKEN_KEY, token);
+  }
+
+  // Fungsi untuk mendapatkan token
+  Future<String?> getToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(TOKEN_KEY);
+  }
+
+  // Fungsi untuk menghapus token (logout)
+  Future<void> removeToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(TOKEN_KEY);
+    await prefs.remove(USER_KEY);
+  }
+
+  // Fungsi untuk menyimpan data user
+  Future<void> _saveUserData(Map<String, dynamic> userData) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(USER_KEY, jsonEncode(userData));
+  }
 
   // Login method
   Future<UserModel> login({
@@ -26,6 +54,16 @@ class AuthService {
       final Map<String, dynamic> responseData = jsonDecode(response.body);
 
       if (response.statusCode == 200) {
+        // Simpan token
+        if (responseData.containsKey('access_token')) {
+          await _saveToken(responseData['access_token']);
+        }
+
+        // Simpan data user
+        if (responseData.containsKey('user')) {
+          await _saveUserData(responseData['user']);
+        }
+
         return UserModel.fromJson(responseData);
       } else {
         throw _handleError(response.statusCode, responseData);
@@ -33,6 +71,7 @@ class AuthService {
     } on http.ClientException {
       throw Exception('Tidak dapat terhubung ke server');
     } catch (e) {
+      print('Login Error: $e'); // Untuk debugging
       throw Exception('Terjadi kesalahan: $e');
     }
   }
@@ -48,10 +87,16 @@ class AuthService {
         body: jsonEncode(user.toJson()),
       );
 
+      final responseData = jsonDecode(response.body);
+
       if (response.statusCode == 201) {
-        return jsonDecode(response.body);
+        // Jika registrasi sekaligus login, simpan token
+        if (responseData.containsKey('access_token')) {
+          await _saveToken(responseData['access_token']);
+        }
+        return responseData;
       } else {
-        throw _handleError(response.statusCode, jsonDecode(response.body));
+        throw _handleError(response.statusCode, responseData);
       }
     } catch (e) {
       throw Exception('Terjadi kesalahan: $e');
@@ -59,20 +104,38 @@ class AuthService {
   }
 
   Future<UserModel> getProfile(String token) async {
-    final url = Uri.parse('$_baseUrl/profile');
-    final response = await http.get(
-      url,
-      headers: {
-        'Authorization': 'Bearer $token',
-      },
-    );
+    try {
+      final url = Uri.parse('$_baseUrl/profile');
+      final response = await http.get(
+        url,
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Accept': 'application/json',
+        },
+      );
 
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      return UserModel.fromJson(data);
-    } else {
-      throw Exception("Failed to fetch profile: ${response.body}");
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        // Update saved user data
+        await _saveUserData(data);
+        return UserModel.fromJson(data);
+      } else if (response.statusCode == 401) {
+        // Token tidak valid atau expired
+        await removeToken(); // Hapus token yang tidak valid
+        throw Exception('Sesi telah berakhir. Silakan login kembali.');
+      } else {
+        throw Exception("Failed to fetch profile: ${response.body}");
+      }
+    } catch (e) {
+      print('Get Profile Error: $e'); // Untuk debugging
+      throw Exception('Terjadi kesalahan: $e');
     }
+  }
+
+  // Fungsi untuk mengecek status login
+  Future<bool> isLoggedIn() async {
+    final token = await getToken();
+    return token != null;
   }
 
   // Error handling method

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:virtual_assistant/model/blood_sugar_record_model.dart';
+import 'package:virtual_assistant/services/catatan_service.dart';
 
 class CatatanKesehatan extends StatefulWidget {
   const CatatanKesehatan({super.key});
@@ -9,20 +12,54 @@ class CatatanKesehatan extends StatefulWidget {
 }
 
 class _CatatanKesehatanState extends State<CatatanKesehatan> {
-  int gulaDarah = 0; // Inisialisasi nilai gula darah dengan 0
+  int gulaDarah = 0;
+  final CatatanService _catatanService = CatatanService();
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  String getPesan(int gulaDarah) {
+    switch (getRange(gulaDarah)) {
+      case 'low':
+        return 'Gula Darah Rendah.\nKonsumsi sedikit gula untuk menstabilkannya.';
+      case 'normal':
+        return 'Pertahankan! Nilai Gula Darah\nAnda Dalam Batas Normal.';
+      case 'high':
+        return 'Atur Pola Makan Anda, Karena\nKadar Gula Darah Anda Masih\nTinggi.';
+      default:
+        return 'Catat hasil kesehatan untuk pantau kondisi tubuh Anda.';
+    }
+  }
+
+  String getRange(int gulaDarah) {
+    if (gulaDarah >= 10 && gulaDarah <= 70) {
+      return 'low';
+    } else if (gulaDarah >= 80 && gulaDarah <= 130) {
+      return 'normal';
+    } else if (gulaDarah > 130) {
+      return 'high';
+    } else {
+      return 'other';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    String pesan = getPesan(gulaDarah);
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Catatan Kesehatan',
-          style: TextStyle(
-            fontSize: 18,
-            color: Colors.white,
+        title: Center(
+          child: const Text(
+            'Catatan Kesehatan',
+            style: TextStyle(
+              fontSize: 18,
+              color: Colors.white,
+            ),
           ),
         ),
-        backgroundColor: Color(0xff113499),
+        backgroundColor: const Color(0xff113499),
       ),
       body: Padding(
         padding: const EdgeInsets.only(top: 20, left: 10, right: 20),
@@ -36,17 +73,17 @@ class _CatatanKesehatanState extends State<CatatanKesehatan> {
                   width: 120,
                   height: 80,
                 ),
-                SizedBox(width: 1),
+                const SizedBox(width: 1),
                 Expanded(
                   child: Container(
-                    padding: EdgeInsets.all(5),
+                    padding: const EdgeInsets.all(5),
                     decoration: BoxDecoration(
                       color: Colors.blue,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
-                      'Pertahankan Nilai Gula Darah \nAnda Dalam Batas Normal',
-                      style: TextStyle(
+                      '$pesan',
+                      style: const TextStyle(
                         color: Colors.black,
                         fontSize: 14,
                       ),
@@ -55,11 +92,11 @@ class _CatatanKesehatanState extends State<CatatanKesehatan> {
                 ),
               ],
             ),
-            SizedBox(height: 40),
+            const SizedBox(height: 40),
             Container(
               height: 300,
               width: double.infinity,
-              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
               decoration: BoxDecoration(
                 color: Colors.blue,
                 borderRadius: BorderRadius.circular(12),
@@ -67,7 +104,7 @@ class _CatatanKesehatanState extends State<CatatanKesehatan> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  const Text(
                     'Kadar gula darah',
                     style: TextStyle(
                       fontSize: 18,
@@ -75,7 +112,7 @@ class _CatatanKesehatanState extends State<CatatanKesehatan> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -85,42 +122,40 @@ class _CatatanKesehatanState extends State<CatatanKesehatan> {
                           _showAddDataModal(context);
                         },
                         style: ElevatedButton.styleFrom(
-                          shape: CircleBorder(),
-                          padding: EdgeInsets.all(10),
+                          shape: const CircleBorder(),
+                          padding: const EdgeInsets.all(10),
                           backgroundColor: Colors.green,
                         ),
-                        child: Icon(
+                        child: const Icon(
                           Icons.add,
                           color: Colors.white,
                           size: 24,
                         ),
                       ),
-                      SizedBox(width: 10),
-                      Container(
-                        width: 160, // Atur ukuran lebar yang diinginkan
+                      const SizedBox(width: 10),
+                      SizedBox(
+                        width: 160,
                         height: 180,
                         child: Stack(
-                          alignment:
-                              Alignment.center, // Menempatkan teks di tengah
+                          alignment: Alignment.center,
                           children: [
                             Transform.scale(
-                              scale:
-                                  4.0, // Skala indikator, semakin besar nilainya, semakin besar ukurannya
+                              scale: 4.0,
                               child: CircularProgressIndicator(
                                 value: gulaDarah / 150,
-                                strokeWidth: 12, // Ketebalan garis lebih besar
+                                strokeWidth: 12,
                                 backgroundColor: Colors.white.withOpacity(0.3),
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                  Colors.red, // Warna indikator
+                                valueColor: const AlwaysStoppedAnimation<Color>(
+                                  Colors.red,
                                 ),
                               ),
                             ),
                             Center(
                               child: Text(
-                                '$gulaDarah \nmg/dL', // Menampilkan nilai gula darah di tengah
+                                '$gulaDarah \nmg/dL',
                                 textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 16, // Ukuran teks yang lebih besar
+                                style: const TextStyle(
+                                  fontSize: 16,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.white,
                                 ),
@@ -129,15 +164,15 @@ class _CatatanKesehatanState extends State<CatatanKesehatan> {
                           ],
                         ),
                       ),
-                      SizedBox(width: 10),
+                      const SizedBox(width: 10),
                       ElevatedButton(
                         onPressed: () {},
                         style: ElevatedButton.styleFrom(
-                          shape: CircleBorder(),
-                          padding: EdgeInsets.all(10),
+                          shape: const CircleBorder(),
+                          padding: const EdgeInsets.all(10),
                           backgroundColor: Colors.green,
                         ),
-                        child: Icon(
+                        child: const Icon(
                           Icons.bar_chart,
                           color: Colors.white,
                           size: 24,
@@ -156,8 +191,93 @@ class _CatatanKesehatanState extends State<CatatanKesehatan> {
 
   void _showAddDataModal(BuildContext context) {
     final TextEditingController dateController = TextEditingController();
-    dateController.text =
-        DateFormat('yyyy-MM-dd').format(DateTime.now()); // Tanggal sekarang
+    final TextEditingController gulaDarahController = TextEditingController();
+    String? selectedWaktu;
+
+    void _tambahDataGulaDarah() async {
+      if (gulaDarahController.text.isEmpty || selectedWaktu == null) {
+        // Tampilkan dialog alert
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Data Belum Lengkap'),
+              content: const Text(
+                'Silakan isi semua data dengan benar sebelum menyimpan.',
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context); // Tutup dialog
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+        return;
+      }
+
+      // Parse nilai gula darah
+      final double gulaDarah = double.tryParse(gulaDarahController.text) ?? 0;
+
+      if (gulaDarah <= 0) {
+        // Tampilkan dialog alert untuk validasi angka
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Nilai Tidak Valid'),
+              content: const Text(
+                'Masukkan nilai kadar gula darah yang valid.',
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context); // Tutup dialog
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+        return;
+      }
+
+      // Buat model data
+      final catatan = CatatanGulaDarah(
+        tanggal: dateController.text,
+        waktu: selectedWaktu!,
+        gulaDarah: gulaDarah,
+      );
+
+      // Panggil service untuk menyimpan data
+      final catatanService = CatatanService();
+      try {
+        await catatanService.tambahCatatanGulaDarah(catatan);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Data berhasil disimpan'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        setState(() {
+          this.gulaDarah = gulaDarah.toInt();
+        });
+        Navigator.pop(context); // Tutup modal
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Gagal menyimpan data: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+
+    dateController.text = DateFormat('yyyy-MM-dd').format(DateTime.now());
 
     showModalBottomSheet(
       context: context,
@@ -170,92 +290,101 @@ class _CatatanKesehatanState extends State<CatatanKesehatan> {
           padding: MediaQuery.of(context).viewInsets,
           child: Padding(
             padding: const EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            child: StatefulBuilder(
+              builder: (BuildContext context, StateSetter setModalState) {
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Tambah Data Kadar Gula Darah',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Tambah Data Kadar Gula Darah',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.close),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                        ),
+                      ],
                     ),
-                    IconButton(
-                      icon: const Icon(Icons.close),
-                      onPressed: () {
-                        Navigator.pop(context);
+                    const SizedBox(height: 10),
+                    TextField(
+                      controller: dateController,
+                      decoration: const InputDecoration(
+                        labelText: 'Tanggal',
+                        border: OutlineInputBorder(),
+                      ),
+                      readOnly: true,
+                      onTap: () async {
+                        DateTime? selectedDate = await showDatePicker(
+                          context: context,
+                          initialDate: DateTime.now(),
+                          firstDate: DateTime(2000),
+                          lastDate: DateTime(2100),
+                        );
+                        if (selectedDate != null) {
+                          setModalState(() {
+                            dateController.text =
+                                DateFormat('yyyy-MM-dd').format(selectedDate);
+                          });
+                        }
                       },
                     ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                TextField(
-                  controller: dateController,
-                  decoration: const InputDecoration(
-                    labelText: 'Tanggal',
-                    border: OutlineInputBorder(),
-                  ),
-                  readOnly: true,
-                  onTap: () async {
-                    DateTime? selectedDate = await showDatePicker(
-                      context: context,
-                      initialDate: DateTime.now(),
-                      firstDate: DateTime(2000),
-                      lastDate: DateTime(2100),
-                    );
-                    if (selectedDate != null) {
-                      dateController.text =
-                          DateFormat('yyyy-MM-dd').format(selectedDate);
-                    }
-                  },
-                ),
-                const SizedBox(height: 10),
-                TextField(
-                  decoration: InputDecoration(
-                    labelText: 'Kadar Gula Darah',
-                    border: const OutlineInputBorder(),
-                    suffixText: 'mg/dL',
-                    suffixStyle: const TextStyle(
-                      color: Colors.grey,
-                      fontSize: 14,
+                    const SizedBox(height: 10),
+                    TextField(
+                      controller: gulaDarahController,
+                      decoration: const InputDecoration(
+                        labelText: 'Kadar Gula Darah',
+                        border: OutlineInputBorder(),
+                        suffixText: 'mg/dL',
+                        suffixStyle: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 14,
+                        ),
+                      ),
+                      keyboardType: TextInputType.number,
                     ),
-                  ),
-                  keyboardType: TextInputType.number,
-                  onChanged: (value) {
-                    // Memperbarui nilai gula darah
-                    setState(() {
-                      gulaDarah = int.tryParse(value) ?? 0;
-                    });
-                  },
-                ),
-                const SizedBox(height: 10),
-                DropdownButtonFormField<String>(
-                  decoration: const InputDecoration(
-                    labelText: 'Waktu',
-                    border: OutlineInputBorder(),
-                  ),
-                  items: const [
-                    DropdownMenuItem(value: 'Pagi', child: Text('Pagi')),
-                    DropdownMenuItem(value: 'Siang', child: Text('Siang')),
-                    DropdownMenuItem(value: 'Malam', child: Text('Malam')),
+                    const SizedBox(height: 10),
+                    DropdownButtonFormField<String>(
+                      decoration: const InputDecoration(
+                        labelText: 'Waktu',
+                        border: OutlineInputBorder(),
+                      ),
+                      items: const [
+                        DropdownMenuItem(value: 'Pagi', child: Text('Pagi')),
+                        DropdownMenuItem(value: 'Siang', child: Text('Siang')),
+                        DropdownMenuItem(value: 'Malam', child: Text('Malam')),
+                      ],
+                      onChanged: (value) {
+                        setModalState(() {
+                          selectedWaktu = value;
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                    Center(
+                      child: ElevatedButton(
+                        onPressed: _tambahDataGulaDarah,
+                        style: ElevatedButton.styleFrom(
+                          minimumSize: const Size(50, 50),
+                          backgroundColor: Colors.green,
+                        ),
+                        child: const Text(
+                          'Simpan',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ),
                   ],
-                  onChanged: (value) {},
-                ),
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: const Size(double.infinity, 50),
-                  ),
-                  child: const Text('Simpan'),
-                ),
-              ],
+                );
+              },
             ),
           ),
         );

@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:virtual_assistant/model/user_model.dart';
 import '../controllers/login_controller.dart';
 import '../services/auth_service.dart';
-import 'model/user_model.dart';
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
