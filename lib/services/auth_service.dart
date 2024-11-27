@@ -121,7 +121,6 @@ class AuthService {
         return UserModel.fromJson(data);
       } else if (response.statusCode == 401) {
         // Token tidak valid atau expired
-        await removeToken(); // Hapus token yang tidak valid
         throw Exception('Sesi telah berakhir. Silakan login kembali.');
       } else {
         throw Exception("Failed to fetch profile: ${response.body}");
@@ -132,10 +131,75 @@ class AuthService {
     }
   }
 
+  Future<UserModel> updateProfile({
+    required String token,
+    String? name,
+    String? gender,
+    String? diabetesCategory,
+    String? phone,
+    String? password,
+  }) async {
+    try {
+      final url = Uri.parse('$_baseUrl/profile');
+      final Map<String, dynamic> body = {};
+
+      // Hanya tambahkan data yang ada
+      if (name != null) body['name'] = name;
+      if (gender != null) body['gender'] = gender;
+      if (diabetesCategory != null)
+        body['diabetes_category'] = diabetesCategory;
+      if (phone != null) body['phone'] = phone;
+      if (password != null) body['password'] = password;
+
+      final response = await http.put(
+        url,
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: jsonEncode(body),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+
+        await _saveUserData(data);
+
+        return UserModel.fromJson(data);
+      } else if (response.statusCode == 401) {
+        // Token tidak valid atau expired
+        throw Exception('Sesi telah berakhir. Silakan login kembali.');
+      } else {
+        throw Exception("Failed to update profile: ${response.body}");
+      }
+    } catch (e) {
+      print('Update Profile Error: $e');
+      throw Exception('Terjadi kesalahan: $e');
+    }
+  }
+
   // Fungsi untuk mengecek status login
   Future<bool> isLoggedIn() async {
     final token = await getToken();
     return token != null;
+  }
+
+  // Fungsi untuk logout
+  Future<void> logout() async {
+    try {
+      // Hapus token dan data pengguna yang tersimpan
+      await removeToken(); // Hapus token
+      await removeUserData(); // Hapus data pengguna
+    } catch (e) {
+      throw Exception('Failed to logout: $e');
+    }
+  }
+
+// Fungsi untuk menghapus data user
+  Future<void> removeUserData() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(USER_KEY);
   }
 
   // Error handling method

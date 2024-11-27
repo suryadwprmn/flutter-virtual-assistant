@@ -13,7 +13,7 @@ class SplashScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xff113499),
       body: Padding(
-        padding: const EdgeInsets.only(top: 279),
+        padding: const EdgeInsets.only(top: 180),
         child: Column(
           children: [
             Center(
@@ -27,12 +27,14 @@ class SplashScreen extends StatelessWidget {
               height: 10,
             ),
             Padding(
-              padding: const EdgeInsets.only(left: 93, right: 93),
-              child: Text(
-                '"Diabetes Virtual Assistant"',
-                style: GoogleFonts.poppins(
-                  fontSize: 16,
-                  color: Colors.white,
+              padding: const EdgeInsets.only(left: 20, right: 20),
+              child: Center(
+                child: Text(
+                  '"Diabetes Virtual Assistant"',
+                  style: GoogleFonts.poppins(
+                    fontSize: 16,
+                    color: Colors.white,
+                  ),
                 ),
               ),
             ),

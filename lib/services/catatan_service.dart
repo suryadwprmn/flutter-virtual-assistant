@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 import '../model/blood_sugar_record_model.dart';
 import 'auth_service.dart';
 
@@ -48,46 +47,33 @@ class CatatanService {
   Future<List<CatatanGulaDarah>> getCatatanGulaDarah() async {
     try {
       final response = await http.get(
-        Uri.parse('$_baseUrl/gula_darah'),
+        Uri.parse('$_baseUrl/gula_darah/terakhir'),
         headers: await _getHeaders(),
       );
 
       if (response.statusCode == 200) {
-        final List<dynamic> responseData = jsonDecode(response.body);
-        return responseData
-            .map((json) => CatatanGulaDarah.fromJson(json))
-            .toList();
+        final responseBody = jsonDecode(response.body);
+
+        // Convert dynamic map to Map<String, dynamic>
+        if (responseBody is Map) {
+          final Map<String, dynamic> typedMap =
+              Map<String, dynamic>.from(responseBody);
+          return [CatatanGulaDarah.fromJson(typedMap)];
+        } else if (responseBody is List) {
+          return responseBody
+              .map((json) =>
+                  CatatanGulaDarah.fromJson(Map<String, dynamic>.from(json)))
+              .toList();
+        } else {
+          throw Exception('Unexpected response format');
+        }
       } else if (response.statusCode == 401) {
         throw Exception('Sesi telah berakhir. Silakan login kembali.');
       } else {
         throw Exception('Gagal mengambil data catatan gula darah');
       }
     } catch (e) {
-      print('Error getting records: $e'); // Debugging
-      rethrow;
-    }
-  }
-
-  // Method untuk mendapatkan catatan gula darah berdasarkan tanggal
-  Future<List<CatatanGulaDarah>> getCatatanByTanggal(String tanggal) async {
-    try {
-      final response = await http.get(
-        Uri.parse('$_baseUrl/gula_darah/tanggal/$tanggal'),
-        headers: await _getHeaders(),
-      );
-
-      if (response.statusCode == 200) {
-        final List<dynamic> responseData = jsonDecode(response.body);
-        return responseData
-            .map((json) => CatatanGulaDarah.fromJson(json))
-            .toList();
-      } else if (response.statusCode == 401) {
-        throw Exception('Sesi telah berakhir. Silakan login kembali.');
-      } else {
-        throw Exception('Gagal mengambil data catatan untuk tanggal tersebut');
-      }
-    } catch (e) {
-      print('Error getting records by date: $e'); // Debugging
+      print('Error getting records: $e');
       rethrow;
     }
   }

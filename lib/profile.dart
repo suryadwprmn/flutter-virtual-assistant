@@ -15,6 +15,16 @@ class _ProfilePageState extends State<Profile> {
   final AuthService _authService = AuthService();
   final LoginController _loginController = Get.find<LoginController>();
 
+  final Map<String, TextEditingController> _controllers = {
+    'name': TextEditingController(),
+    'email': TextEditingController(),
+    'gender': TextEditingController(),
+    'diabetesCategory': TextEditingController(),
+    'phone': TextEditingController(),
+    'newPassword': TextEditingController(),
+    'confirmPassword': TextEditingController(),
+  };
+
   late Future<UserModel> _userProfile;
 
   @override
@@ -23,39 +33,134 @@ class _ProfilePageState extends State<Profile> {
     _userProfile = _fetchProfile();
   }
 
-  Future<UserModel> _fetchProfile() async {
-    return await _authService.getProfile(_loginController.token);
+  Future<void> _logout() async {
+    // Menghapus token atau data login dari penyimpanan lokal
+    await _authService.logout();
+
+    // Mengarahkan pengguna kembali ke halaman login
+    Get.offAllNamed('/login');
   }
 
-  // Custom bottom nav item builder for improved visual feedback on selected state
-  Widget _buildNavItem(
-      String iconPath, String label, bool isSelected, String route) {
-    return InkWell(
-      onTap: () {
-        if (!isSelected) {
-          // Prevents navigation if already selected
-          Get.toNamed(route);
-        }
-      },
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Image.asset(
-            iconPath,
-            width: 24,
-            height: 24,
-            color: isSelected ? const Color(0xFF1a237e) : Colors.grey,
+  Future<UserModel> _fetchProfile() async {
+    final user = await _authService.getProfile(_loginController.token);
+    setState(() {
+      _controllers['name']!.text = user.name ?? '';
+      _controllers['email']!.text = user.email ?? '';
+      _controllers['gender']!.text = user.gender ?? '';
+      _controllers['diabetesCategory']!.text = user.diabetesCategory ?? '';
+      _controllers['phone']!.text = user.phone ?? '';
+    });
+    return user;
+  }
+
+  @override
+  void dispose() {
+    for (var controller in _controllers.values) {
+      controller.dispose();
+    }
+    super.dispose();
+  }
+
+  Future<void> _saveChanges() async {
+    // Validate password update if provided
+    if (_controllers['newPassword']!.text.isNotEmpty) {
+      if (_controllers['newPassword']!.text !=
+          _controllers['confirmPassword']!.text) {
+        Get.snackbar("Gagal", "Konfirmasi password tidak cocok",
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.red,
+            colorText: Colors.white);
+        return;
+      }
+    }
+
+    try {
+      // Update profile information
+      await _authService.updateProfile(
+        token: _loginController.token,
+        name: _controllers['name']!.text,
+        gender: _controllers['gender']!.text,
+        diabetesCategory: _controllers['diabetesCategory']!.text,
+        phone: _controllers['phone']!.text,
+        // Only send password if a new password is provided
+        password: _controllers['newPassword']!.text.isNotEmpty
+            ? _controllers['newPassword']!.text
+            : null,
+      );
+
+      Get.snackbar("Berhasil", "Profil dan password berhasil diperbarui",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.green,
+          colorText: Colors.white);
+
+      // Clear password fields after successful update
+      _controllers['newPassword']!.clear();
+      _controllers['confirmPassword']!.clear();
+
+      // Refresh profile data
+      setState(() {
+        _userProfile = _fetchProfile();
+      });
+    } catch (e) {
+      Get.snackbar("Gagal", "Gagal memperbarui profil",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white);
+    }
+  }
+
+  Widget _buildInputField({
+    required String label,
+    required TextEditingController controller,
+    bool isReadOnly = false,
+    TextInputType keyboardType = TextInputType.text,
+    bool obscureText = false,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: TextField(
+        controller: controller,
+        readOnly: isReadOnly,
+        obscureText: obscureText,
+        keyboardType: keyboardType,
+        decoration: InputDecoration(
+          labelText: label,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8.0),
           ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-              color: isSelected ? const Color(0xFF1a237e) : Colors.grey,
-            ),
+          filled: true,
+          fillColor: isReadOnly ? Colors.grey.shade300 : Colors.white,
+        ),
+        style: const TextStyle(color: Colors.black),
+      ),
+    );
+  }
+
+  Widget _buildDropdownField({
+    required String label,
+    required String selectedValue,
+    required List<String> options,
+    required void Function(String?) onChanged,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: DropdownButtonFormField<String>(
+        value: selectedValue.isEmpty ? null : selectedValue,
+        decoration: InputDecoration(
+          labelText: label,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8.0),
           ),
-        ],
+          filled: true,
+          fillColor: Colors.white,
+        ),
+        items: options
+            .map((option) => DropdownMenuItem<String>(
+                  value: option,
+                  child: Text(option),
+                ))
+            .toList(),
+        onChanged: onChanged,
       ),
     );
   }
@@ -64,16 +169,30 @@ class _ProfilePageState extends State<Profile> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Profile"),
+        title: const Text(
+          "Profil Pengguna",
+          style: TextStyle(
+            fontSize: 18,
+            color: Colors.white,
+          ),
+        ),
         backgroundColor: const Color(0xff113499),
+        actions: [
+          IconButton(
+            icon: Icon(
+              Icons.exit_to_app,
+            ),
+            iconSize: 20,
+            color: Colors.white,
+            onPressed: _logout, // Panggil fungsi logout saat tombol ditekan
+          ),
+        ],
       ),
       body: FutureBuilder<UserModel>(
         future: _userProfile,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(
               child: Text(
@@ -82,55 +201,86 @@ class _ProfilePageState extends State<Profile> {
               ),
             );
           } else if (snapshot.hasData) {
-            final user = snapshot.data!;
-            return Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 20),
-                  Text(
-                    "Name: ${user.name ?? 'N/A'}",
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    "Email: ${user.email ?? 'N/A'}",
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    "Gender: ${user.gender ?? 'N/A'}",
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    "Diabetes Category: ${user.diabetesCategory ?? 'N/A'}",
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    "Phone: ${user.phone ?? 'N/A'}",
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                ],
+            return SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    Center(
+                      child: Icon(
+                        Icons.account_circle,
+                        size: 100,
+                        color: Colors.grey.shade500,
+                      ),
+                    ),
+                    const SizedBox(height: 16.0),
+                    _buildInputField(
+                        label: "Nama", controller: _controllers['name']!),
+                    _buildInputField(
+                        label: "Email",
+                        controller: _controllers['email']!,
+                        isReadOnly: true),
+                    _buildDropdownField(
+                      label: "Jenis Kelamin",
+                      selectedValue: _controllers['gender']!.text,
+                      options: ["Laki-laki", "Perempuan"],
+                      onChanged: (value) {
+                        setState(() {
+                          _controllers['gender']!.text = value ?? '';
+                        });
+                      },
+                    ),
+                    _buildDropdownField(
+                      label: "Kategori Diabetes",
+                      selectedValue: _controllers['diabetesCategory']!.text,
+                      options: ["Non Diabetes", "Diabetes 1", "Diabetes 2"],
+                      onChanged: (value) {
+                        setState(() {
+                          _controllers['diabetesCategory']!.text = value ?? '';
+                        });
+                      },
+                    ),
+                    _buildInputField(
+                      label: "Nomor Telepon",
+                      controller: _controllers['phone']!,
+                      keyboardType: TextInputType.phone,
+                    ),
+                    _buildInputField(
+                      label: "Password Baru",
+                      controller: _controllers['newPassword']!,
+                      obscureText: true,
+                    ),
+                    _buildInputField(
+                      label: "Konfirmasi Password",
+                      controller: _controllers['confirmPassword']!,
+                      obscureText: true,
+                    ),
+                    const SizedBox(height: 16.0),
+                    Center(
+                      child: ElevatedButton(
+                        onPressed: _saveChanges,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xff113499),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                        ),
+                        child: const Text(
+                          "Simpan Perubahan",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             );
           } else {
             return const Center(
-              child: Text("No profile data available."),
+              child: Text("Tidak ada data profil."),
             );
           }
         },
-      ),
-      bottomNavigationBar: BottomAppBar(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            _buildNavItem('assets/Home.png', 'Beranda', false, '/home'),
-            _buildNavItem('assets/Customer.png', 'Profile', true, '/profile'),
-          ],
-        ),
       ),
     );
   }

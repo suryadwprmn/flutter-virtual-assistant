@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:virtual_assistant/grafik.dart';
 import 'package:virtual_assistant/model/blood_sugar_record_model.dart';
 import 'package:virtual_assistant/services/catatan_service.dart';
 
@@ -13,11 +14,33 @@ class CatatanKesehatan extends StatefulWidget {
 
 class _CatatanKesehatanState extends State<CatatanKesehatan> {
   int gulaDarah = 0;
+  bool _isLoading = true;
   final CatatanService _catatanService = CatatanService();
 
   @override
   void initState() {
     super.initState();
+    _fetchLatestBloodSugarRecord();
+  }
+
+  void _fetchLatestBloodSugarRecord() async {
+    try {
+      final records = await _catatanService.getCatatanGulaDarah();
+      if (records.isNotEmpty) {
+        setState(() {
+          gulaDarah = records.first.gulaDarah.toInt();
+          _isLoading = false;
+        });
+      } else {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   String getPesan(int gulaDarah) {
@@ -50,8 +73,8 @@ class _CatatanKesehatanState extends State<CatatanKesehatan> {
     String pesan = getPesan(gulaDarah);
     return Scaffold(
       appBar: AppBar(
-        title: Center(
-          child: const Text(
+        title: const Center(
+          child: Text(
             'Catatan Kesehatan',
             style: TextStyle(
               fontSize: 18,
@@ -82,7 +105,7 @@ class _CatatanKesehatanState extends State<CatatanKesehatan> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
-                      '$pesan',
+                      pesan,
                       style: const TextStyle(
                         color: Colors.black,
                         fontSize: 14,
@@ -103,7 +126,7 @@ class _CatatanKesehatanState extends State<CatatanKesehatan> {
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+                children: <Widget>[
                   const Text(
                     'Kadar gula darah',
                     style: TextStyle(
@@ -113,73 +136,82 @@ class _CatatanKesehatanState extends State<CatatanKesehatan> {
                     ),
                   ),
                   const SizedBox(height: 15),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      ElevatedButton(
-                        onPressed: () {
-                          _showAddDataModal(context);
-                        },
-                        style: ElevatedButton.styleFrom(
-                          shape: const CircleBorder(),
-                          padding: const EdgeInsets.all(10),
-                          backgroundColor: Colors.green,
+                  Flexible(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        ElevatedButton(
+                          onPressed: () {
+                            _showAddDataModal(context);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            shape: const CircleBorder(),
+                            padding: const EdgeInsets.all(10),
+                            backgroundColor: Colors.green,
+                          ),
+                          child: const Icon(
+                            Icons.add,
+                            color: Colors.white,
+                            size: 24,
+                          ),
                         ),
-                        child: const Icon(
-                          Icons.add,
-                          color: Colors.white,
-                          size: 24,
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      SizedBox(
-                        width: 160,
-                        height: 180,
-                        child: Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            Transform.scale(
-                              scale: 4.0,
-                              child: CircularProgressIndicator(
-                                value: gulaDarah / 150,
-                                strokeWidth: 12,
-                                backgroundColor: Colors.white.withOpacity(0.3),
-                                valueColor: const AlwaysStoppedAnimation<Color>(
-                                  Colors.red,
+                        const SizedBox(width: 10),
+                        SizedBox(
+                          width: 100,
+                          height: 180,
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              Transform.scale(
+                                scale: 4.0,
+                                child: CircularProgressIndicator(
+                                  value: gulaDarah / 150,
+                                  strokeWidth: 8,
+                                  backgroundColor:
+                                      Colors.white.withOpacity(0.3),
+                                  valueColor:
+                                      const AlwaysStoppedAnimation<Color>(
+                                    Colors.red,
+                                  ),
                                 ),
                               ),
-                            ),
-                            Center(
-                              child: Text(
-                                '$gulaDarah \nmg/dL',
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
+                              Center(
+                                child: Text(
+                                  '$gulaDarah \nmg/dL',
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 10),
-                      ElevatedButton(
-                        onPressed: () {},
-                        style: ElevatedButton.styleFrom(
-                          shape: const CircleBorder(),
-                          padding: const EdgeInsets.all(10),
-                          backgroundColor: Colors.green,
+                        const SizedBox(width: 10),
+                        ElevatedButton(
+                          onPressed: () {
+                            Get.to(const Grafik());
+                          },
+                          style: ElevatedButton.styleFrom(
+                            shape: const CircleBorder(),
+                            padding: const EdgeInsets.all(10),
+                            backgroundColor: Colors.green,
+                            elevation: 0, // Menghilangkan bayangan
+                            surfaceTintColor: Colors
+                                .transparent, // Menghilangkan warna tambahan
+                          ),
+                          child: const Icon(
+                            Icons.bar_chart,
+                            color: Colors.white,
+                            size: 24,
+                          ),
                         ),
-                        child: const Icon(
-                          Icons.bar_chart,
-                          color: Colors.white,
-                          size: 24,
-                        ),
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
+                  )
                 ],
               ),
             ),
@@ -194,7 +226,7 @@ class _CatatanKesehatanState extends State<CatatanKesehatan> {
     final TextEditingController gulaDarahController = TextEditingController();
     String? selectedWaktu;
 
-    void _tambahDataGulaDarah() async {
+    void tambahDataGulaDarah() async {
       if (gulaDarahController.text.isEmpty || selectedWaktu == null) {
         // Tampilkan dialog alert
         showDialog(
@@ -371,7 +403,7 @@ class _CatatanKesehatanState extends State<CatatanKesehatan> {
                     const SizedBox(height: 20),
                     Center(
                       child: ElevatedButton(
-                        onPressed: _tambahDataGulaDarah,
+                        onPressed: tambahDataGulaDarah,
                         style: ElevatedButton.styleFrom(
                           minimumSize: const Size(50, 50),
                           backgroundColor: Colors.green,
