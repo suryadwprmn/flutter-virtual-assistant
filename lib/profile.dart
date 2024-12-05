@@ -34,11 +34,28 @@ class _ProfilePageState extends State<Profile> {
   }
 
   Future<void> _logout() async {
-    // Menghapus token atau data login dari penyimpanan lokal
-    await _authService.logout();
+    bool? confirmLogout = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Konfirmasi Logout'),
+        content: Text('Apakah Anda yakin ingin logout?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text('Batal'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: Text('Logout'),
+          ),
+        ],
+      ),
+    );
 
-    // Mengarahkan pengguna kembali ke halaman login
-    Get.offAllNamed('/login');
+    if (confirmLogout == true) {
+      await _authService.logout();
+      Get.offAllNamed('/login');
+    }
   }
 
   Future<UserModel> _fetchProfile() async {
@@ -184,7 +201,7 @@ class _ProfilePageState extends State<Profile> {
             ),
             iconSize: 20,
             color: Colors.white,
-            onPressed: _logout, // Panggil fungsi logout saat tombol ditekan
+            onPressed: _logout,
           ),
         ],
       ),

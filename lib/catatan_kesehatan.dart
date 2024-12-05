@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:virtual_assistant/grafik.dart';
 import 'package:virtual_assistant/model/blood_sugar_record_model.dart';
 import 'package:virtual_assistant/services/catatan_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CatatanKesehatan extends StatefulWidget {
   const CatatanKesehatan({super.key});
@@ -13,7 +14,10 @@ class CatatanKesehatan extends StatefulWidget {
 }
 
 class _CatatanKesehatanState extends State<CatatanKesehatan> {
+  int currentIntakeWater = 0;
   int gulaDarah = 0;
+  double hba1cValue = 0;
+
   bool _isLoading = true;
   final CatatanService _catatanService = CatatanService();
 
@@ -21,23 +25,76 @@ class _CatatanKesehatanState extends State<CatatanKesehatan> {
   void initState() {
     super.initState();
     _fetchLatestBloodSugarRecord();
+    _getHba1cTerakhir();
+    _resetIfNewDay();
   }
 
+  Future<void> _resetIfNewDay() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    // Cek apakah perlu reset
+    DateTime today = DateTime.now();
+    String todayString = "${today.year}-${today.month}-${today.day}";
+    String? lastDate = prefs.getString('last_date');
+
+    if (lastDate != todayString) {
+      // Jika tanggal berubah, reset currentIntake
+      setState(() {
+        currentIntakeWater = 0;
+      });
+      await prefs.setString('last_date', todayString);
+    } else {
+      // Ambil nilai terakhir jika tanggal sama
+      setState(() {
+        currentIntakeWater = prefs.getInt('current_intake') ?? 0;
+      });
+    }
+  }
+
+  Future<void> _updateIntake(int newValue) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      currentIntakeWater = newValue;
+    });
+    await prefs.setInt('current_intake', currentIntakeWater);
+  }
+
+  // Fungsi untuk mengambil HbA1c terakhir
+  Future<void> _getHba1cTerakhir() async {
+    try {
+      CatatanHbA1c catatanHbA1c = await CatatanService().getHba1cTerakhir();
+
+      // Always update state, even with default/zero value
+      setState(() {
+        hba1cValue = catatanHbA1c.hba1c;
+      });
+    } catch (e) {
+      print('Error fetching latest HbA1c record: $e');
+      setState(() {
+        hba1cValue = 0; // Default value
+      });
+    }
+  }
+
+  @override
   void _fetchLatestBloodSugarRecord() async {
     try {
       final records = await _catatanService.getCatatanGulaDarah();
       if (records.isNotEmpty) {
         setState(() {
           gulaDarah = records.first.gulaDarah.toInt();
+          pesan = getPesan(gulaDarah); // Set pesan based on blood sugar value
           _isLoading = false;
         });
       } else {
         setState(() {
+          pesan = 'Catat hasil kesehatan untuk pantau kondisi tubuh Anda.';
           _isLoading = false;
         });
       }
     } catch (e) {
       setState(() {
+        pesan = 'Catat hasil kesehatan untuk pantau kondisi tubuh Anda.';
         _isLoading = false;
       });
     }
@@ -68,10 +125,11 @@ class _CatatanKesehatanState extends State<CatatanKesehatan> {
     }
   }
 
+  String pesan = 'Catat hasil kesehatan untuk pantau kondisi tubuh Anda.';
   @override
   Widget build(BuildContext context) {
-    String pesan = getPesan(gulaDarah);
     return Scaffold(
+      backgroundColor: Colors.grey[200],
       appBar: AppBar(
         title: const Center(
           child: Text(
@@ -83,6 +141,20 @@ class _CatatanKesehatanState extends State<CatatanKesehatan> {
           ),
         ),
         backgroundColor: const Color(0xff113499),
+        actions: [
+          Tooltip(
+            message:
+                'Catatan Kesehatan ini membantu Anda dalam \nmemantau gula darah,HbA1c, dan konsumsi air putih secara rutin',
+            child: IconButton(
+              onPressed: () {},
+              icon: Icon(
+                Icons.help_outline,
+                color: Colors.white,
+                size: 22,
+              ),
+            ),
+          )
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.only(top: 20, left: 10, right: 20),
@@ -101,7 +173,7 @@ class _CatatanKesehatanState extends State<CatatanKesehatan> {
                   child: Container(
                     padding: const EdgeInsets.all(5),
                     decoration: BoxDecoration(
-                      color: Colors.blue,
+                      color: Colors.blueAccent,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
@@ -117,11 +189,11 @@ class _CatatanKesehatanState extends State<CatatanKesehatan> {
             ),
             const SizedBox(height: 40),
             Container(
-              height: 300,
+              height: 250,
               width: double.infinity,
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
               decoration: BoxDecoration(
-                color: Colors.blue,
+                color: Colors.blueAccent,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Column(
@@ -132,7 +204,7 @@ class _CatatanKesehatanState extends State<CatatanKesehatan> {
                     style: TextStyle(
                       fontSize: 18,
                       color: Colors.white,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                   const SizedBox(height: 15),
@@ -215,12 +287,239 @@ class _CatatanKesehatanState extends State<CatatanKesehatan> {
                 ],
               ),
             ),
+            const SizedBox(height: 30),
+            Row(
+              children: [
+                // Container HbA1c
+                Expanded(
+                  child: Container(
+                    height: 180,
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.blueAccent,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Stack(
+                      children: [
+                        // Header di atas
+                        Positioned(
+                          left: 10,
+                          right: 10,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text(
+                                'HbA1c',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 16,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              Tooltip(
+                                message:
+                                    'Normal: jumlah HbA1c di bawah 5,7%\nDiabetes 1: jumlah HbA1c antara 5,7–6,4%\nDiabetes 2: jumlah HbA1c mencapai 6,5% atau lebih',
+                                child: IconButton(
+                                  onPressed: () {},
+                                  icon: Icon(
+                                    Icons.info_outline,
+                                    color: Colors.white,
+                                    size: 22,
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+
+                        // Konten utama
+                        Positioned(
+                          top: 50,
+                          left: 0,
+                          right: 0,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              IconButton(
+                                  onPressed: _showHbA1cDialog,
+                                  icon: Icon(
+                                    Icons.add_circle,
+                                    color: Colors.green,
+                                    size: 22,
+                                  )),
+                              Text(
+                                hba1cValue.toString(),
+                                style: TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                const SizedBox(width: 10),
+
+                // Container Minum
+                Expanded(
+                  child: Container(
+                    height: 180,
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.blueAccent,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Stack(
+                      children: [
+                        // Header
+                        Positioned(
+                          left: 10,
+                          right: 10,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'Minum',
+                                style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.white),
+                              ),
+                              Tooltip(
+                                message:
+                                    'Minum cukup air membantu \nmeningkatkan energi serta \nmenjaga cairan tubuh tetap seimbang',
+                                child: IconButton(
+                                  onPressed: () {},
+                                  icon: Icon(
+                                    Icons.info_outline,
+                                    color: Colors.white,
+                                    size: 22,
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+
+                        // Konten utama
+                        Positioned(
+                          top: 50,
+                          left: 0,
+                          right: 0,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              IconButton(
+                                  onPressed: () {
+                                    _showInputDialogWater(context);
+                                  },
+                                  icon: Icon(
+                                    Icons.add_circle,
+                                    color: Colors.green,
+                                    size: 22,
+                                  )),
+                              Image.asset(
+                                'assets/glass.png',
+                                width: 80,
+                                height: 80,
+                              ),
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 140),
+                          child: Center(
+                              child: Text(
+                            '$currentIntakeWater / 8',
+                            style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.white),
+                          )),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ],
         ),
       ),
     );
   }
+// Tutup Container
 
+// Tambah Data HbA1c
+  void _showHbA1cDialog() {
+    final TextEditingController _controller = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Masukkan Nilai HbA1c"),
+          content: TextField(
+            controller: _controller,
+            keyboardType: TextInputType.number,
+            decoration: const InputDecoration(
+              hintText: "Masukkan nilai antara 1 - 10",
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Tutup dialog
+              },
+              child: const Text("Batal"),
+            ),
+            TextButton(
+              onPressed: () async {
+                final value = double.tryParse(_controller.text);
+                if (value != null && value >= 1 && value <= 10) {
+                  // Kirim data ke API menggunakan POST
+                  final catatanHbA1c = CatatanHbA1c(
+                    createdAt:
+                        DateTime.now().toIso8601String(), // Waktu sekarang
+                    hba1c: value,
+                  );
+
+                  try {
+                    // Panggil method POST
+                    await CatatanService().tambahCatatanHbA1c(catatanHbA1c);
+
+                    // Perbarui UI dengan nilai baru
+                    setState(() {
+                      hba1cValue = value;
+                    });
+
+                    Navigator.of(context).pop(); // Tutup dialog
+                  } catch (e) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Error: $e')),
+                    );
+                  }
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text("Masukkan nilai antara 1 - 10."),
+                    ),
+                  );
+                }
+              },
+              child: const Text("Simpan"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+// Tambah Data Gula Darah
   void _showAddDataModal(BuildContext context) {
     final TextEditingController dateController = TextEditingController();
     final TextEditingController gulaDarahController = TextEditingController();
@@ -347,6 +646,12 @@ class _CatatanKesehatanState extends State<CatatanKesehatan> {
                       ],
                     ),
                     const SizedBox(height: 10),
+                    Image.asset(
+                      'assets/blood-analysis.png',
+                      width: 100,
+                      height: 100,
+                    ),
+                    const SizedBox(height: 10),
                     TextField(
                       controller: dateController,
                       decoration: const InputDecoration(
@@ -419,6 +724,72 @@ class _CatatanKesehatanState extends State<CatatanKesehatan> {
               },
             ),
           ),
+        );
+      },
+    );
+  }
+
+  Future<void> _showInputDialogWater(BuildContext context) async {
+    await _resetIfNewDay(); // Pastikan nilai di-reset jika hari baru
+
+    TextEditingController inputController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Jumlah Minum'),
+          content: Column(
+            mainAxisSize:
+                MainAxisSize.min, // Membatasi ukuran dialog sesuai isi
+            children: [
+              SizedBox(
+                height: 100, // Atur tinggi gambar
+                child: Image.asset(
+                  'assets/drink-water.png',
+                  fit: BoxFit
+                      .contain, // Menyesuaikan gambar agar tetap proporsional
+                ),
+              ),
+              SizedBox(height: 16), // Jarak antara gambar dan konten
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    width: 50, // Lebar TextField disesuaikan
+                    child: TextField(
+                      controller: inputController,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        hintText: '',
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 8), // Jarak antara TextField dan teks
+                  Text('x 250ml', style: TextStyle(fontSize: 16)),
+                ],
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Tutup dialog
+              },
+              child: Text('Batal'),
+            ),
+            TextButton(
+              onPressed: () async {
+                // Ambil nilai dari TextField dan perbarui intake
+                int newValue = int.tryParse(inputController.text) ?? 0;
+                await _updateIntake(newValue);
+
+                Navigator.of(context)
+                    .pop(); // Tutup dialog setelah memperbarui nilai
+              },
+              child: Text('OK'),
+            ),
+          ],
         );
       },
     );

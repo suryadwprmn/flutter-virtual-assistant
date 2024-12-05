@@ -25,3 +25,27 @@ class CatatanGulaDarah {
     };
   }
 }
+
+class CatatanHbA1c {
+  final String createdAt;
+  final double hba1c;
+
+  CatatanHbA1c({
+    required this.createdAt,
+    required this.hba1c,
+  });
+
+  factory CatatanHbA1c.fromJson(Map<dynamic, dynamic> json) {
+    return CatatanHbA1c(
+      createdAt: json['createdAt'].toString(),
+      hba1c: (json['hba1c'] as num).toDouble(),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'createdAt': createdAt,
+      'hba1c': hba1c,
+    };
+  }
+}

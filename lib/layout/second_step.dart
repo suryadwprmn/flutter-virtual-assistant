@@ -46,7 +46,7 @@ class _MyAppState extends State<TwoStep> {
               ),
             ),
 
-            const SizedBox(height: 20), // Jarak antara teks dan grid
+            const SizedBox(height: 20), 
 
             // Flexible widget untuk grid pilihan
             Flexible(
@@ -56,7 +56,7 @@ class _MyAppState extends State<TwoStep> {
                   itemCount: 3,
                   itemBuilder: (context, index) {
                     // Data tipe diabetes
-                    List<String> titles = ["Tipe 1", "Tipe 2", "Pre-Diabet"];
+                    List<String> titles = ["Tipe 1", "Tipe 2", "Non-Diabetes"];
                     List<String> descriptions = [
                       "dimana kondisi Divister tidak menghasilkan insulin",
                       "dimana kondisi insulin dalam tubuh Divister kurang bekerja efektif atau tidak cukup",

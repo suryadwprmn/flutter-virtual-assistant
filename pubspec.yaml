@@ -43,6 +43,7 @@ dependencies:
   shared_preferences: ^2.3.3
   intl: 0.19.0
   syncfusion_flutter_charts: ^27.2.2
+  fl_chart: ^0.69.2
 
 dev_dependencies:
   flutter_test:
@@ -85,6 +86,9 @@ flutter:
     - assets/notification.png
     - assets/wave-atas2.png
     - assets/notification2.png
+    - assets/glass.png
+    - assets/drink-water.png
+    - assets/blood-analysis.png
     
 
   #   - images/a_dot_burr.jpeg

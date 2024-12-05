@@ -90,7 +90,7 @@ class FirstStep extends StatelessWidget {
                   const SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () {
-                      Get.toNamed(AppRoutes.second_step);
+                      Get.toNamed(AppRoutes.login);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF0A459F),
