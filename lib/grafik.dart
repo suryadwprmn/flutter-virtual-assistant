@@ -89,10 +89,10 @@ class _GrafikState extends State<Grafik> {
     }
 
     return LineChartData(
-      gridData: FlGridData(show: false),
+      gridData: const FlGridData(show: false),
       titlesData: FlTitlesData(
         show: true,
-        topTitles: AxisTitles(
+        topTitles: const AxisTitles(
           sideTitles: SideTitles(showTitles: false),
         ),
         bottomTitles: AxisTitles(
@@ -111,7 +111,7 @@ class _GrafikState extends State<Grafik> {
             },
           ),
         ),
-        leftTitles: AxisTitles(
+        leftTitles: const AxisTitles(
           sideTitles: SideTitles(showTitles: false),
         ),
         rightTitles: AxisTitles(
@@ -132,7 +132,7 @@ class _GrafikState extends State<Grafik> {
                   ],
                 );
               } else if (value == 150) {
-                return Column(
+                return const Column(
                   children: [
                     Text(
                       'mg/dl',
@@ -199,7 +199,7 @@ class _GrafikState extends State<Grafik> {
           color: Colors.green,
           barWidth: 4,
           isStrokeCapRound: true,
-          dotData: FlDotData(show: true),
+          dotData: const FlDotData(show: true),
           belowBarData: BarAreaData(show: false),
         ),
       ],

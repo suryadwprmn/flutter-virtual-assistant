@@ -5,7 +5,9 @@ import 'auth_service.dart';
 import '../utils/custom_exception.dart';
 
 class BloodSugarService {
-  final String _baseUrl = 'http://127.0.0.1:5000/api';
+  // final String _baseUrl = 'http://127.0.0.1:5000/api';
+  // final String _baseUrl = 'http://10.0.2.2:5000/api';
+  final String _baseUrl = 'http://192.168.2.171:5000/api';
   final AuthService _authService = AuthService();
 
   Future<Map<String, String>> _getHeaders() async {

@@ -27,6 +27,7 @@ class _CatatanKesehatanState extends State<CatatanKesehatan> {
     _fetchLatestBloodSugarRecord();
     _getHba1cTerakhir();
     _resetIfNewDay();
+    getPesan(gulaDarah);
   }
 
   Future<void> _resetIfNewDay() async {
@@ -54,7 +55,7 @@ class _CatatanKesehatanState extends State<CatatanKesehatan> {
   Future<void> _updateIntake(int newValue) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      currentIntakeWater = newValue;
+      currentIntakeWater += newValue;
     });
     await prefs.setInt('current_intake', currentIntakeWater);
   }
@@ -147,7 +148,7 @@ class _CatatanKesehatanState extends State<CatatanKesehatan> {
                 'Catatan Kesehatan ini membantu Anda dalam \nmemantau gula darah,HbA1c, dan konsumsi air putih secara rutin',
             child: IconButton(
               onPressed: () {},
-              icon: Icon(
+              icon: const Icon(
                 Icons.help_outline,
                 color: Colors.white,
                 size: 22,
@@ -321,7 +322,7 @@ class _CatatanKesehatanState extends State<CatatanKesehatan> {
                                     'Normal: jumlah HbA1c di bawah 5,7%\nDiabetes 1: jumlah HbA1c antara 5,7–6,4%\nDiabetes 2: jumlah HbA1c mencapai 6,5% atau lebih',
                                 child: IconButton(
                                   onPressed: () {},
-                                  icon: Icon(
+                                  icon: const Icon(
                                     Icons.info_outline,
                                     color: Colors.white,
                                     size: 22,
@@ -342,14 +343,14 @@ class _CatatanKesehatanState extends State<CatatanKesehatan> {
                             children: [
                               IconButton(
                                   onPressed: _showHbA1cDialog,
-                                  icon: Icon(
+                                  icon: const Icon(
                                     Icons.add_circle,
                                     color: Colors.green,
                                     size: 22,
                                   )),
                               Text(
                                 hba1cValue.toString(),
-                                style: TextStyle(
+                                style: const TextStyle(
                                     fontSize: 24,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.white),
@@ -382,7 +383,7 @@ class _CatatanKesehatanState extends State<CatatanKesehatan> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
+                              const Text(
                                 'Minum',
                                 style: TextStyle(
                                     fontSize: 16,
@@ -394,7 +395,7 @@ class _CatatanKesehatanState extends State<CatatanKesehatan> {
                                     'Minum cukup air membantu \nmeningkatkan energi serta \nmenjaga cairan tubuh tetap seimbang',
                                 child: IconButton(
                                   onPressed: () {},
-                                  icon: Icon(
+                                  icon: const Icon(
                                     Icons.info_outline,
                                     color: Colors.white,
                                     size: 22,
@@ -417,7 +418,7 @@ class _CatatanKesehatanState extends State<CatatanKesehatan> {
                                   onPressed: () {
                                     _showInputDialogWater(context);
                                   },
-                                  icon: Icon(
+                                  icon: const Icon(
                                     Icons.add_circle,
                                     color: Colors.green,
                                     size: 22,
@@ -435,7 +436,7 @@ class _CatatanKesehatanState extends State<CatatanKesehatan> {
                           child: Center(
                               child: Text(
                             '$currentIntakeWater / 8',
-                            style: TextStyle(
+                            style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w500,
                                 color: Colors.white),
@@ -456,7 +457,7 @@ class _CatatanKesehatanState extends State<CatatanKesehatan> {
 
 // Tambah Data HbA1c
   void _showHbA1cDialog() {
-    final TextEditingController _controller = TextEditingController();
+    final TextEditingController controller = TextEditingController();
 
     showDialog(
       context: context,
@@ -464,7 +465,7 @@ class _CatatanKesehatanState extends State<CatatanKesehatan> {
         return AlertDialog(
           title: const Text("Masukkan Nilai HbA1c"),
           content: TextField(
-            controller: _controller,
+            controller: controller,
             keyboardType: TextInputType.number,
             decoration: const InputDecoration(
               hintText: "Masukkan nilai antara 1 - 10",
@@ -479,7 +480,7 @@ class _CatatanKesehatanState extends State<CatatanKesehatan> {
             ),
             TextButton(
               onPressed: () async {
-                final value = double.tryParse(_controller.text);
+                final value = double.tryParse(controller.text);
                 if (value != null && value >= 1 && value <= 10) {
                   // Kirim data ke API menggunakan POST
                   final catatanHbA1c = CatatanHbA1c(
@@ -738,7 +739,7 @@ class _CatatanKesehatanState extends State<CatatanKesehatan> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Jumlah Minum'),
+          title: const Text('Jumlah Minum'),
           content: Column(
             mainAxisSize:
                 MainAxisSize.min, // Membatasi ukuran dialog sesuai isi
@@ -751,7 +752,7 @@ class _CatatanKesehatanState extends State<CatatanKesehatan> {
                       .contain, // Menyesuaikan gambar agar tetap proporsional
                 ),
               ),
-              SizedBox(height: 16), // Jarak antara gambar dan konten
+              const SizedBox(height: 16), // Jarak antara gambar dan konten
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -760,13 +761,13 @@ class _CatatanKesehatanState extends State<CatatanKesehatan> {
                     child: TextField(
                       controller: inputController,
                       keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         hintText: '',
                       ),
                     ),
                   ),
-                  SizedBox(width: 8), // Jarak antara TextField dan teks
-                  Text('x 250ml', style: TextStyle(fontSize: 16)),
+                  const SizedBox(width: 8), // Jarak antara TextField dan teks
+                  const Text('x 250ml', style: TextStyle(fontSize: 16)),
                 ],
               ),
             ],
@@ -776,7 +777,7 @@ class _CatatanKesehatanState extends State<CatatanKesehatan> {
               onPressed: () {
                 Navigator.of(context).pop(); // Tutup dialog
               },
-              child: Text('Batal'),
+              child: const Text('Batal'),
             ),
             TextButton(
               onPressed: () async {
@@ -787,7 +788,7 @@ class _CatatanKesehatanState extends State<CatatanKesehatan> {
                 Navigator.of(context)
                     .pop(); // Tutup dialog setelah memperbarui nilai
               },
-              child: Text('OK'),
+              child: const Text('OK'),
             ),
           ],
         );

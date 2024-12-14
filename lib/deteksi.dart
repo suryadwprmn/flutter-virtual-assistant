@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:virtual_assistant/routes/app_routes.dart';
+import 'package:virtual_assistant/kamera_deteksi.dart';
 
 class Deteksi extends StatelessWidget {
   const Deteksi({super.key});
@@ -8,136 +7,87 @@ class Deteksi extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          // Background wave
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: Image.asset('assets/wave-atas2.png', width: double.infinity),
-          ),
-
-          // Main content
-          SafeArea(
-            child: Column(
-              children: [
-                // Header section with logo
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Align(
-                    alignment: Alignment.topLeft,
-                    child: Image.asset(
-                      'assets/logo3.png',
-                      width: 186,
-                      height: 80,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-
-                // Center content with instruction and upload area
-                Expanded(
-                  child: Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Text(
-                          'Cek kadar gula makananmu sekarang!',
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold),
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 16),
-                        Container(
-                          width: 120,
-                          height: 120,
-                          decoration: BoxDecoration(
-                            color: Colors.grey[300],
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: const Icon(Icons.add, size: 48, color: Colors.grey),
-                        ),
-                        const SizedBox(height: 16),
-                        ElevatedButton(
-                          onPressed: () {
-                
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(
-                                0xFF1a237e), // Updated to `backgroundColor`
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                          child: const Text('Upload File'),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          // Bottom Navigation
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 10,
-                    offset: const Offset(0, -2),
-                  ),
-                ],
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      appBar: AppBar(
+        title: const Text(
+          'Penghitung Nutrisi',
+          style: TextStyle(fontSize: 18, color: Colors.white),
+        ),
+        backgroundColor: const Color(0xff113499),
+      ),
+      body: Padding(
+        padding:
+            const EdgeInsets.only(top: 10), // Memberikan jarak 10 dari atas
+        child: Column(
+          children: [
+            Container(
+              margin: const EdgeInsets.symmetric(
+                  horizontal:
+                      10), // Memberikan margin kiri dan kanan sebesar 10
+              color: Colors.grey[200], // Memberikan warna abu-abu
+              padding: const EdgeInsets.all(
+                  10), // Memberikan padding di dalam container
+              child: const Row(
                 children: [
-                  _buildNavItem(
-                      'assets/Home.png', 'Beranda', true, AppRoutes.home),
-                  _buildNavItem('assets/Customer.png', 'Profile', false,
-                      AppRoutes.profile),
+                  Icon(Icons.search),
+                  SizedBox(width: 8), // Memberikan jarak antara icon dan teks
+                  Text(
+                    'Cari Makanan',
+                    style: TextStyle(
+                        fontSize: 16), // Mengatur ukuran font menjadi 16
+                  ),
                 ],
               ),
             ),
-          ),
-        ],
+            const SizedBox(height: 10),
+            const Text(
+              'atau',
+              style: TextStyle(fontSize: 14, color: Colors.black),
+            ),
+            const SizedBox(height: 10),
+            GestureDetector(
+              onTap: () {
+                // Navigasi langsung ke halaman kamera
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const CameraPage(),
+                  ),
+                );
+              },
+              child: Container(
+                width: double.infinity,
+                height: 140,
+                margin: const EdgeInsets.symmetric(horizontal: 10),
+                decoration: BoxDecoration(
+                  color: Colors.grey[200],
+                  borderRadius: BorderRadius.circular(
+                      10), // Optional: membuat sudut membulat
+                ),
+                padding: const EdgeInsets.symmetric(vertical: 20),
+                child: const Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.camera_alt,
+                      size: 50, // Ukuran icon diperbesar
+                      color: Colors.black54,
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                      'Scan Makanan',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.black,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
-}
-
-Widget _buildNavItem(
-    String iconPath, String label, bool isSelected, String route) {
-  return InkWell(
-    onTap: () {
-      Get.toNamed(route);
-    },
-    child: Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Image.asset(
-          iconPath,
-          width: 24,
-          height: 24,
-          color: isSelected ? const Color(0xFF1a237e) : Colors.grey,
-        ),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 12,
-            color: isSelected ? const Color(0xFF1a237e) : Colors.grey,
-          ),
-        ),
-      ],
-    ),
-  );
 }

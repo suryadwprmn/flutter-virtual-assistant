@@ -4,8 +4,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../model/user_model.dart';
 
 class AuthService {
-  final String _baseUrl = 'http://127.0.0.1:5000/api';
+  // final String _baseUrl = 'http://10.0.2.2:5000/api';
+  // // final String _baseUrl = 'http://127.0.0.1:5000/api';
+  final String _baseUrl = 'http://192.168.2.171:5000/api';
   static const String TOKEN_KEY = 'access_token';
+
   static const String USER_KEY = 'user_data';
 
   // Fungsi untuk menyimpan token
@@ -146,8 +149,9 @@ class AuthService {
       // Hanya tambahkan data yang ada
       if (name != null) body['name'] = name;
       if (gender != null) body['gender'] = gender;
-      if (diabetesCategory != null)
+      if (diabetesCategory != null) {
         body['diabetes_category'] = diabetesCategory;
+      }
       if (phone != null) body['phone'] = phone;
       if (password != null) body['password'] = password;
 

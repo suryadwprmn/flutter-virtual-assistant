@@ -37,16 +37,16 @@ class _ProfilePageState extends State<Profile> {
     bool? confirmLogout = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Konfirmasi Logout'),
-        content: Text('Apakah Anda yakin ingin logout?'),
+        title: const Text('Konfirmasi Logout'),
+        content: const Text('Apakah Anda yakin ingin logout?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: Text('Batal'),
+            child: const Text('Batal'),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: Text('Logout'),
+            child: const Text('Logout'),
           ),
         ],
       ),
@@ -196,7 +196,7 @@ class _ProfilePageState extends State<Profile> {
         backgroundColor: const Color(0xff113499),
         actions: [
           IconButton(
-            icon: Icon(
+            icon: const Icon(
               Icons.exit_to_app,
             ),
             iconSize: 20,

@@ -130,13 +130,13 @@ class _LoginState extends State<Login> {
                 ElevatedButton(
                   onPressed: _isLoading ? null : _handleLogin,
                   style: ElevatedButton.styleFrom(
-                    minimumSize: const Size(166, 27),
+                    minimumSize: const Size(200, 40),
                     backgroundColor: const Color(0xff113499),
                   ),
                   child: _isLoading
                       ? const SizedBox(
-                          height: 20,
-                          width: 20,
+                          height: 40,
+                          width: 40,
                           child: CircularProgressIndicator(
                             color: Colors.white,
                             strokeWidth: 2,
