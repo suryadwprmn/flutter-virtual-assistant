@@ -33,6 +33,27 @@ class _ProfilePageState extends State<Profile> {
     _userProfile = _fetchProfile();
   }
 
+  // Fungsi validasi nama
+  bool validateName(String name) {
+    return name.isNotEmpty &&
+        name.length >= 3 &&
+        !RegExp(r'[0-9]').hasMatch(name);
+  }
+
+  // Fungsi validasi password
+  bool validatePassword(String password) {
+    // Misalnya password harus memiliki minimal 8 karakter dan mengandung angka serta huruf
+    return password.isNotEmpty &&
+        password.length >= 6 &&
+        RegExp(r'(?=.*[0-9])(?=.*[a-zA-Z])').hasMatch(password);
+  }
+
+// Fungsi validasi nomor telepon
+  bool validatePhone(String phone) {
+    // Validasi nomor telepon dengan format angka 10 hingga 13 digit
+    return RegExp(r'^\d{10,13}$').hasMatch(phone);
+  }
+
   Future<void> _logout() async {
     bool? confirmLogout = await showDialog<bool>(
       context: context,
@@ -79,8 +100,37 @@ class _ProfilePageState extends State<Profile> {
   }
 
   Future<void> _saveChanges() async {
-    // Validate password update if provided
+    // Validasi nama
+    if (!validateName(_controllers['name']!.text)) {
+      Get.snackbar("Gagal",
+          "Nama harus terdiri dari minimal 3 karakter dan tidak mengandung angka",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white);
+      return;
+    }
+
+    // Validasi nomor telepon
+    if (!validatePhone(_controllers['phone']!.text)) {
+      Get.snackbar("Gagal", "Nomor telepon tidak valid.",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white);
+      return;
+    }
+
+    // Validasi password update jika diberikan
     if (_controllers['newPassword']!.text.isNotEmpty) {
+      // Validasi password
+      if (!validatePassword(_controllers['newPassword']!.text)) {
+        Get.snackbar("Gagal",
+            "Password harus memiliki minimal 6 karakter, termasuk angka dan huruf.",
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.red,
+            colorText: Colors.white);
+        return;
+      }
+
       if (_controllers['newPassword']!.text !=
           _controllers['confirmPassword']!.text) {
         Get.snackbar("Gagal", "Konfirmasi password tidak cocok",
@@ -92,14 +142,14 @@ class _ProfilePageState extends State<Profile> {
     }
 
     try {
-      // Update profile information
+      // Update profil informasi
       await _authService.updateProfile(
         token: _loginController.token,
         name: _controllers['name']!.text,
         gender: _controllers['gender']!.text,
         diabetesCategory: _controllers['diabetesCategory']!.text,
         phone: _controllers['phone']!.text,
-        // Only send password if a new password is provided
+        // Hanya kirim password jika ada password baru yang diberikan
         password: _controllers['newPassword']!.text.isNotEmpty
             ? _controllers['newPassword']!.text
             : null,
@@ -110,11 +160,11 @@ class _ProfilePageState extends State<Profile> {
           backgroundColor: Colors.green,
           colorText: Colors.white);
 
-      // Clear password fields after successful update
+      // Clear password fields setelah update berhasil
       _controllers['newPassword']!.clear();
       _controllers['confirmPassword']!.clear();
 
-      // Refresh profile data
+      // Segarkan data profil
       setState(() {
         _userProfile = _fetchProfile();
       });

@@ -49,21 +49,28 @@ class Register extends StatelessWidget {
 
                         // Name TextField
                         TextFormField(
-                          controller: _controller.nameController,
-                          decoration: const InputDecoration(labelText: 'Nama'),
-                          validator: (value) =>
-                              value!.isEmpty ? 'Nama tidak boleh kosong' : null,
-                        ),
+                            controller: _controller.nameController,
+                            decoration:
+                                const InputDecoration(labelText: 'Nama'),
+                            validator: (value) {
+                              if (!_controller.validateName(value!)) {
+                                return 'Nama harus berupa huruf';
+                              }
+                              return null;
+                            }),
                         const SizedBox(height: 16),
 
                         // Email TextField
                         TextFormField(
-                          controller: _controller.emailController,
-                          decoration: const InputDecoration(labelText: 'Email'),
-                          validator: (value) => value!.isEmpty
-                              ? 'Email tidak boleh kosong'
-                              : null,
-                        ),
+                            controller: _controller.emailController,
+                            decoration:
+                                const InputDecoration(labelText: 'Email'),
+                            validator: (value) {
+                              if (!_controller.validateEmail(value!)) {
+                                return 'Email harus berupa gmail yang valid';
+                              }
+                              return null;
+                            }),
                         const SizedBox(height: 16),
 
                         // Password TextField
@@ -72,9 +79,12 @@ class Register extends StatelessWidget {
                           decoration:
                               const InputDecoration(labelText: 'Kata Sandi'),
                           obscureText: true,
-                          validator: (value) => value!.length < 6
-                              ? 'Kata sandi minimal 6 karakter'
-                              : null,
+                          validator: (value) {
+                            if (!_controller.validatePassword(value!)) {
+                              return 'Kata sandi harus lebih dari 6 karakter';
+                            }
+                            return null;
+                          },
                         ),
                         const SizedBox(height: 16),
 
@@ -117,11 +127,17 @@ class Register extends StatelessWidget {
                         // Phone TextField
                         TextFormField(
                           controller: _controller.phoneController,
-                          keyboardType: TextInputType.phone,
+                          keyboardType: TextInputType
+                              .number, // Agar hanya keyboard angka yang muncul
                           decoration: const InputDecoration(
                             labelText: 'Nomor Telepon',
                           ),
+                          onChanged: (value) {
+                            // Panggil fungsi setPhone untuk memvalidasi dan mengupdate nomor telepon
+                            _controller.setPhone(value);
+                          },
                         ),
+
                         const SizedBox(height: 24),
 
                         // Register Button

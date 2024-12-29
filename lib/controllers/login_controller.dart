@@ -7,4 +7,15 @@ class LoginController extends GetxController {
     _token.value = token;
     update();
   }
+
+  // Fungsi validasi email
+  bool validateEmail(String email) {
+    return email.isNotEmpty &&
+        email.contains('@') &&
+        email.endsWith('@gmail.com');
+  }
+
+  bool validatePassword(String password) {
+    return password.length >= 6;
+  }
 }

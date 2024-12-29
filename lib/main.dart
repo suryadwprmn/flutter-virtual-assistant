@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:virtual_assistant/controllers/login_controller.dart';
-
+import 'package:virtual_assistant/helper/notification_helper.dart';
 import 'package:virtual_assistant/routes/app_routes.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  NotificationHelper.init();
   Get.put(LoginController());
   runApp(const MyApp());
 }

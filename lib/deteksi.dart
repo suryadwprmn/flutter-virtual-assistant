@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:virtual_assistant/search_page.dart';
 import 'package:virtual_assistant/kamera_deteksi.dart';
 
 class Deteksi extends StatelessWidget {
@@ -19,23 +20,30 @@ class Deteksi extends StatelessWidget {
             const EdgeInsets.only(top: 10), // Memberikan jarak 10 dari atas
         child: Column(
           children: [
-            Container(
-              margin: const EdgeInsets.symmetric(
-                  horizontal:
-                      10), // Memberikan margin kiri dan kanan sebesar 10
-              color: Colors.grey[200], // Memberikan warna abu-abu
-              padding: const EdgeInsets.all(
-                  10), // Memberikan padding di dalam container
-              child: const Row(
-                children: [
-                  Icon(Icons.search),
-                  SizedBox(width: 8), // Memberikan jarak antara icon dan teks
-                  Text(
-                    'Cari Makanan',
-                    style: TextStyle(
-                        fontSize: 16), // Mengatur ukuran font menjadi 16
+            GestureDetector(
+              onTap: () {
+                // Navigasi ke halaman pencarian
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const SearchPage(),
                   ),
-                ],
+                );
+              },
+              child: Container(
+                margin: const EdgeInsets.symmetric(horizontal: 10),
+                color: Colors.grey[200],
+                padding: const EdgeInsets.all(10),
+                child: const Row(
+                  children: [
+                    Icon(Icons.search),
+                    SizedBox(width: 8),
+                    Text(
+                      'Cari Makanan',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ],
+                ),
               ),
             ),
             const SizedBox(height: 10),
@@ -60,8 +68,8 @@ class Deteksi extends StatelessWidget {
                 margin: const EdgeInsets.symmetric(horizontal: 10),
                 decoration: BoxDecoration(
                   color: Colors.grey[200],
-                  borderRadius: BorderRadius.circular(
-                      10), // Optional: membuat sudut membulat
+                  borderRadius:
+                      BorderRadius.circular(10), // Membuat sudut membulat
                 ),
                 padding: const EdgeInsets.symmetric(vertical: 20),
                 child: const Column(
@@ -69,7 +77,7 @@ class Deteksi extends StatelessWidget {
                   children: [
                     Icon(
                       Icons.camera_alt,
-                      size: 50, // Ukuran icon diperbesar
+                      size: 50, // Ukuran ikon diperbesar
                       color: Colors.black54,
                     ),
                     SizedBox(height: 10),

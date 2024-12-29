@@ -4,12 +4,33 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../model/user_model.dart';
 
 class AuthService {
-  // final String _baseUrl = 'http://10.0.2.2:5000/api';
-  // // final String _baseUrl = 'http://127.0.0.1:5000/api';
-  final String _baseUrl = 'http://192.168.2.171:5000/api';
+  // final String _baseUrl = 'http://192.168.2.171:5000/api';
+  // final String _baseUrl = 'http://192.168.50.151:5000/api';
+  final String _baseUrl = 'https://fc9e-118-96-68-228.ngrok-free.app//api';
+
   static const String TOKEN_KEY = 'access_token';
 
   static const String USER_KEY = 'user_data';
+
+  /// Mengirim permintaan reset password
+  Future<String> requestResetPassword(String email) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$_baseUrl/request-reset-password'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'email': email}),
+      );
+
+      if (response.statusCode == 200) {
+        return 'Email reset password telah dikirim';
+      } else {
+        final responseData = jsonDecode(response.body);
+        return responseData['error'] ?? 'Terjadi kesalahan pada server.';
+      }
+    } catch (e) {
+      throw Exception('Gagal mengirim permintaan reset password: $e');
+    }
+  }
 
   // Fungsi untuk menyimpan token
   Future<void> _saveToken(String token) async {

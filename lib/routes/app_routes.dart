@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:virtual_assistant/auth/forgot-password.dart';
 import 'package:virtual_assistant/auth/login.dart';
 import 'package:virtual_assistant/auth/register.dart';
 import 'package:virtual_assistant/beranda.dart';
@@ -25,6 +26,9 @@ class AppRoutes {
   static const catatan_kesehatan = '/kesehatan';
   static const notifikasi = '/notifikasi';
   static const grafik = '/grafik';
+  static const about = '/about';
+  static const sentimen = '/sentimen';
+  static const forgot_password = '/forgot-password';
 
   static final routes = [
     GetPage(name: splash, page: () => SplashScreen()),
@@ -34,6 +38,7 @@ class AppRoutes {
     GetPage(name: second_step, page: () => const TwoStep()),
     GetPage(name: third_step, page: () => const ThirdStep()),
     GetPage(name: home, page: () => const Beranda()),
+    GetPage(name: forgot_password, page: () => ForgotPassword()),
     GetPage(
       name: profile,
       page: () => const Profile(),

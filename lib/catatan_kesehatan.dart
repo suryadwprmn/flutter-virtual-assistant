@@ -33,23 +33,40 @@ class _CatatanKesehatanState extends State<CatatanKesehatan> {
   Future<void> _resetIfNewDay() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    // Cek apakah perlu reset
     DateTime today = DateTime.now();
-    String todayString = "${today.year}-${today.month}-${today.day}";
-    String? lastDate = prefs.getString('last_date');
+    String todayString =
+        today.toIso8601String().split('T')[0]; // Hanya ambil tanggal
+    String? lastDateStored = prefs.getString('last_date');
 
-    if (lastDate != todayString) {
-      // Jika tanggal berubah, reset currentIntake
+    print('Last Date Stored: $lastDateStored');
+    print('Today: $todayString');
+
+    // Cek apakah ini hari baru
+    if (lastDateStored == null || lastDateStored != todayString) {
+      // Reset currentIntakeWater dan simpan tanggal hari ini
       setState(() {
         currentIntakeWater = 0;
       });
+
       await prefs.setString('last_date', todayString);
+      await prefs.setInt('current_intake', 0);
+
+      print('New Day Detected. Intake reset to 0.');
     } else {
-      // Ambil nilai terakhir jika tanggal sama
+      // Ambil nilai current_intake yang tersimpan
+      int savedIntake = prefs.getInt('current_intake') ?? 0;
       setState(() {
-        currentIntakeWater = prefs.getInt('current_intake') ?? 0;
+        currentIntakeWater = savedIntake;
       });
+      print('Same Day. Current Intake: $currentIntakeWater');
     }
+  }
+
+  /// Fungsi untuk menyimpan intake air ke SharedPreferences
+  Future<void> _saveCurrentIntake() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('current_intake', currentIntakeWater);
+    print('Current Intake Saved: $currentIntakeWater');
   }
 
   Future<void> _updateIntake(int newValue) async {
@@ -426,7 +443,17 @@ class _CatatanKesehatanState extends State<CatatanKesehatan> {
                               Image.asset(
                                 'assets/glass.png',
                                 width: 80,
-                                height: 80,
+
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Container(
+                                    width: 80,
+                                    color: Colors.grey[300],
+                                    child: const Icon(Icons.image_not_supported,
+                                        color: Colors.grey),
+                                  );
+                                },
+                                fit: BoxFit
+                                    .contain, // Ensure image fits properly
                               ),
                             ],
                           ),
@@ -731,33 +758,35 @@ class _CatatanKesehatanState extends State<CatatanKesehatan> {
   }
 
   Future<void> _showInputDialogWater(BuildContext context) async {
-    await _resetIfNewDay(); // Pastikan nilai di-reset jika hari baru
+    await _resetIfNewDay(); // Ensure the value is reset if it's a new day
 
     TextEditingController inputController = TextEditingController();
 
-    showDialog(
+    showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Jumlah Minum'),
-          content: Column(
+        return Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
             mainAxisSize:
-                MainAxisSize.min, // Membatasi ukuran dialog sesuai isi
+                MainAxisSize.min, // Limit the height of the bottom sheet
             children: [
+              const Text('Sudah Minum Berapa Hari Ini?',
+                  style: TextStyle(fontSize: 16)),
+              const SizedBox(height: 16),
               SizedBox(
-                height: 100, // Atur tinggi gambar
+                height: 150, // Adjust the image height
                 child: Image.asset(
                   'assets/drink-water.png',
-                  fit: BoxFit
-                      .contain, // Menyesuaikan gambar agar tetap proporsional
+                  fit: BoxFit.contain, // Ensure the image remains proportional
                 ),
               ),
-              const SizedBox(height: 16), // Jarak antara gambar dan konten
+              const SizedBox(height: 16), // Space between image and input
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   SizedBox(
-                    width: 50, // Lebar TextField disesuaikan
+                    width: 50,
                     child: TextField(
                       controller: inputController,
                       keyboardType: TextInputType.number,
@@ -766,31 +795,35 @@ class _CatatanKesehatanState extends State<CatatanKesehatan> {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 8), // Jarak antara TextField dan teks
+                  const SizedBox(width: 8), // Space between TextField and label
                   const Text('x 250ml', style: TextStyle(fontSize: 16)),
+                ],
+              ),
+              const SizedBox(height: 16), // Space between input and buttons
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop(); // Close the bottom sheet
+                    },
+                    child: const Text('Batal'),
+                  ),
+                  TextButton(
+                    onPressed: () async {
+                      // Get the value from the TextField and update the intake
+                      int newValue = int.tryParse(inputController.text) ?? 0;
+                      await _updateIntake(newValue);
+
+                      Navigator.of(context)
+                          .pop(); // Close the bottom sheet after updating
+                    },
+                    child: const Text('OK'),
+                  ),
                 ],
               ),
             ],
           ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Tutup dialog
-              },
-              child: const Text('Batal'),
-            ),
-            TextButton(
-              onPressed: () async {
-                // Ambil nilai dari TextField dan perbarui intake
-                int newValue = int.tryParse(inputController.text) ?? 0;
-                await _updateIntake(newValue);
-
-                Navigator.of(context)
-                    .pop(); // Tutup dialog setelah memperbarui nilai
-              },
-              child: const Text('OK'),
-            ),
-          ],
         );
       },
     );

@@ -1,56 +1,79 @@
-// login_unit_test.dart
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get/get.dart';
+import 'package:mockito/mockito.dart';
+import 'package:virtual_assistant/controllers/login_controller.dart';
 import 'package:virtual_assistant/auth/login.dart';
 
-void main() {
-  group('Login Validation Unit Tests', () {
-    late _LoginState loginState;
+// Mock LoginController
+class MockLoginController extends Mock implements LoginController {
+  @override
+  final formKey = GlobalKey<FormState>();
+  @override
+  final emailController = TextEditingController();
+  @override
+  final passwordController = TextEditingController();
 
-    setUp(() {
-      // Create a Login widget and get its state for testing
-      final login = Login();
-      loginState = login.createState();
-    });
+  @override
+  bool validateEmail(String email) =>
+      email.isNotEmpty && email.contains('@gmail.com');
+  @override
+  bool validatePassword(String password) => password.length >= 6;
 
-    test('Email validation fails for non-Gmail email', () {
-      // Test emails that are not Gmail
-      final nonGmailEmails = [
-        'surya@outlook.com',
-        'surya@yahoo.com',
-        'surya@hotmail.com',
-        'surya@email.com'
-      ];
-
-      for (var email in nonGmailEmails) {
-        expect(loginState.isValidGmailEmail(email), isFalse,
-            reason:
-                'Email $email should be considered invalid as it is not a Gmail address');
-      }
-    });
-
-    test('Password validation fails for short passwords', () {
-      // Test passwords shorter than 6 characters
-      final shortPasswords = ['', '12345', 'pass', 'a1'];
-
-      for (var password in shortPasswords) {
-        expect(loginState.isValidPasswordLength(password), isFalse,
-            reason:
-                'Password $password should be considered invalid due to short length');
-      }
-    });
-  });
+  @override
+  Future<void> loginUser() async {
+    // Mock implementation for login
+  }
 }
 
-// Extension to add custom validation methods to _LoginState for testing
-extension LoginStateValidation on _LoginState {
-  bool isValidGmailEmail(String email) {
-    // Validate that the email is specifically a Gmail address
-    final gmailRegex = RegExp(r'^[a-zA-Z0-9._%+-]+@gmail\.com$');
-    return gmailRegex.hasMatch(email);
-  }
+void main() {
+  setUp(() {
+    // Initialize GetX navigation for testing
+    Get.testMode = true;
+  });
 
-  bool isValidPasswordLength(String password) {
-    // Validate password length is at least 6 characters
-    return password.length >= 6;
-  }
+  tearDown(() {
+    // Reset GetX test mode after each test
+    Get.reset();
+  });
+
+  testWidgets('Login screen renders correctly', (WidgetTester tester) async {
+    // Build the Login screen and trigger a frame
+    await tester.pumpWidget(
+      const GetMaterialApp(
+        home: Login(),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    // Verify key elements in the Login screen
+
+    expect(find.text('Email'), findsOneWidget);
+    expect(find.text('Kata Sandi'), findsOneWidget);
+    // Find the ElevatedButton using the key.
+    final loginButton = find.byKey(const Key('loginButton'));
+
+    expect(loginButton, findsOneWidget);
+  });
+
+  testWidgets('Input fields accept correct input', (WidgetTester tester) async {
+    // Build the Login screen and trigger a frame
+    await tester.pumpWidget(
+      const GetMaterialApp(
+        home: Login(),
+      ),
+    );
+
+    // Enter valid email
+    await tester.enterText(find.byKey(const Key('emailField')), 'johndoe@gmail.com');
+    // Enter valid password
+    await tester.enterText(find.byKey(const Key('passwordField')), 'password123');
+
+    await tester.pump();
+
+    // Verify entered values
+    expect(find.text('johndoe@gmail.com'), findsOneWidget);
+    expect(find.text('password123'), findsOneWidget);
+  });
 }

@@ -1,17 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
+import 'package:virtual_assistant/helper/notification_helper.dart';
 import 'package:virtual_assistant/routes/app_routes.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-class Beranda extends StatelessWidget {
+class Beranda extends StatefulWidget {
   const Beranda({super.key});
 
   @override
+  State<Beranda> createState() => _BerandaState();
+}
+
+class _BerandaState extends State<Beranda> {
+  @override
+  void initState() {
+    super.initState();
+    _initializeNotifications();
+  }
+
+  Future<void> _initializeNotifications() async {
+    await _requestNotificationPermission();
+    await NotificationHelper.scheduleDrinkingReminders();
+  }
+
+  Future<void> _requestNotificationPermission() async {
+    if (await Permission.notification.isDenied) {
+      await Permission.notification.request();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    _requestNotificationPermission();
-    _scheduleWaterReminder();
     return Scaffold(
       body: Stack(
         children: [
@@ -103,9 +123,9 @@ class Beranda extends StatelessWidget {
                         _buildMenuItem(context, 'assets/book.png',
                             'Catatan\nKesehatan', AppRoutes.catatan_kesehatan),
                         _buildMenuItem(context, 'assets/notification.png',
-                            'Notifikasi', AppRoutes.notifikasi),
-                        _buildMenuItem(context, 'assets/grafik.png', 'Grafik',
-                            AppRoutes.grafik),
+                            'Notifikasi\nObat', AppRoutes.notifikasi),
+                        _buildMenuItem(context, 'assets/grafik.png',
+                            'Grafik\nGula Darah', AppRoutes.grafik),
                       ],
                     ),
                   ),
@@ -138,6 +158,8 @@ class Beranda extends StatelessWidget {
                       'assets/Home.png', 'Beranda', true, AppRoutes.home),
                   _buildNavItem('assets/Customer.png', 'Profile', false,
                       AppRoutes.profile),
+                  // _buildNavItem('assets/contract.png', 'Setting', false,
+                  //     AppRoutes.),
                 ],
               ),
             ),
@@ -145,59 +167,6 @@ class Beranda extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  static Future<void> _requestNotificationPermission() async {
-    if (await Permission.notification.isDenied) {
-      await Permission.notification.request();
-    }
-  }
-
-  void _scheduleWaterReminder() async {
-    FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-        FlutterLocalNotificationsPlugin();
-
-    const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
-
-    const InitializationSettings initializationSettings =
-        InitializationSettings(android: initializationSettingsAndroid);
-
-    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
-
-    // Fungsi untuk menampilkan notifikasi
-    Future<void> showNotification() async {
-      const BigPictureStyleInformation bigPictureStyleInformation =
-          BigPictureStyleInformation(
-        DrawableResourceAndroidBitmap('assets/glass'),
-        contentTitle: 'Pengingat Minum Air',
-        summaryText: 'Sudah 4 jam, jangan lupa minum air ya!',
-        largeIcon: DrawableResourceAndroidBitmap('assets/glass'),
-      );
-
-      const AndroidNotificationDetails androidNotificationDetails =
-          AndroidNotificationDetails(
-        'water_reminder_channel',
-        'Water Reminder',
-        channelDescription: 'Pengingat minum air putih setiap 4 jam',
-        styleInformation: bigPictureStyleInformation,
-        importance: Importance.max,
-        priority: Priority.high,
-      );
-
-      const NotificationDetails notificationDetails =
-          NotificationDetails(android: androidNotificationDetails);
-
-      await flutterLocalNotificationsPlugin.show(
-        0,
-        'Pengingat Minum Air',
-        'Sudah 4 jam, jangan lupa minum air ya!',
-        notificationDetails,
-      );
-    }
-
-    // Menunggu 4 jam (4 * 60 * 60 detik = 14400 detik) dan kemudian menunjukkan notifikasi
-    await Future.delayed(Duration(seconds: 10), showNotification);
   }
 
   Widget _buildMenuItem(

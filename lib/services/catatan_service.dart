@@ -4,9 +4,10 @@ import '../model/blood_sugar_record_model.dart';
 import 'auth_service.dart';
 
 class CatatanService {
-  // final String _baseUrl = 'http://127.0.0.1:5000/api';
-  // final String _baseUrl = 'http://10.0.2.2:5000/api';
-  final String _baseUrl = 'http://192.168.2.171:5000/api';
+  // final String _baseUrl = 'http://192.168.2.171:5000/api';
+  // final String _baseUrl = 'http://192.168.50.151:5000/api';
+  final String _baseUrl = 'https://fc9e-118-96-68-228.ngrok-free.app//api';
+
   final AuthService _authService = AuthService();
 
   // Method untuk mendapatkan header dengan token

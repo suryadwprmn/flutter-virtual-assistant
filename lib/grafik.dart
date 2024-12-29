@@ -185,7 +185,7 @@ class _GrafikState extends State<Grafik> {
       borderData: FlBorderData(show: false),
       minX: 0,
       maxX: records.length.toDouble(),
-      minY: 10,
+      minY: 0,
       maxY: 150,
       lineBarsData: [
         LineChartBarData(
