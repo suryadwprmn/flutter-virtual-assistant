@@ -97,9 +97,7 @@ class _BerandaState extends State<Beranda> {
                     ],
                   ),
                 ),
-
                 const SizedBox(height: 16),
-
                 // Blue Card Container with fixed height and width
                 Center(
                   child: Container(
@@ -130,6 +128,52 @@ class _BerandaState extends State<Beranda> {
                     ),
                   ),
                 ),
+                const SizedBox(height: 30),
+                Align(
+                  alignment: Alignment.bottomRight, // Posisi di kanan bawah
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.all(16.0), // Jarak dari tepi layar
+                    child: TextButton(
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 10, // Padding horizontal lebih besar
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(
+                              12), // Sudut membulat lebih kecil
+                        ),
+                      ),
+                      onPressed: () {
+                        Get.toNamed(AppRoutes.chat); // Navigasi ke halaman chat
+                      },
+                      child: Column(
+                        mainAxisSize:
+                            MainAxisSize.min, // Ukuran minimal untuk Column
+                        children: [
+                          Image.asset(
+                            'assets/chatbot2.png',
+                            height: 50,
+                            width: 50,
+                          ),
+                          const SizedBox(
+                              height: 2), // Jarak antara gambar dan teks
+                          const Text(
+                            'Chatbot', // Teks di bawah gambar
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.black, // Warna teks
+                            ),
+                            textAlign:
+                                TextAlign.center, // Teks berada di tengah
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                )
               ],
             ),
           ),
@@ -157,7 +201,7 @@ class _BerandaState extends State<Beranda> {
                   _buildNavItem(
                       'assets/Home.png', 'Beranda', true, AppRoutes.home),
                   _buildNavItem('assets/Customer.png', 'Profile', false,
-                      AppRoutes.profile),
+                      AppRoutes.settings),
                   // _buildNavItem('assets/contract.png', 'Setting', false,
                   //     AppRoutes.),
                 ],

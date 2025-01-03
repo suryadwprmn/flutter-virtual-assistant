@@ -244,16 +244,7 @@ class _ProfilePageState extends State<Profile> {
           ),
         ),
         backgroundColor: const Color(0xff113499),
-        actions: [
-          IconButton(
-            icon: const Icon(
-              Icons.exit_to_app,
-            ),
-            iconSize: 20,
-            color: Colors.white,
-            onPressed: _logout,
-          ),
-        ],
+       
       ),
       body: FutureBuilder<UserModel>(
         future: _userProfile,

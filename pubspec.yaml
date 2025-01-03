@@ -47,6 +47,7 @@ dependencies:
   shared_preferences: ^2.3.3
   syncfusion_flutter_charts: ^27.2.2
   timezone: ^0.10.0
+
  
 
 dev_dependencies:
@@ -104,6 +105,9 @@ flutter:
     - assets/telur-rebus.jpeg
     - assets/sounds/notification_sound.mp3
     - assets/contract.png
+    - assets/chatbot.jpg
+    - assets/chatbot2.png
+    
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
   # An image asset can refer to one or more resolution-specific "variants", see

@@ -120,7 +120,7 @@ class _LoginState extends State<Login> {
                       color: const Color(0xff113499),
                     ),
                   ),
-                  const SizedBox(height: 65),
+                  const SizedBox(height: 40),
                   TextFormField(
                     key: const Key('emailField'),
                     controller: _emailController,
@@ -189,7 +189,7 @@ class _LoginState extends State<Login> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 10),
                   ElevatedButton(
                     key: const Key('loginButton'),
                     onPressed: _isLoading ? null : _handleLogin,
@@ -215,7 +215,7 @@ class _LoginState extends State<Login> {
                             ),
                           ),
                   ),
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 20),
                   TextButton(
                     onPressed: () {
                       Get.toNamed(AppRoutes.register);

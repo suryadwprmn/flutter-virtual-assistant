@@ -6,7 +6,7 @@ import 'auth_service.dart';
 class CatatanService {
   // final String _baseUrl = 'http://192.168.2.171:5000/api';
   // final String _baseUrl = 'http://192.168.50.151:5000/api';
-  final String _baseUrl = 'https://fc9e-118-96-68-228.ngrok-free.app//api';
+  final String _baseUrl = 'https://ox-nearby-kangaroo.ngrok-free.app//api';
 
   final AuthService _authService = AuthService();
 

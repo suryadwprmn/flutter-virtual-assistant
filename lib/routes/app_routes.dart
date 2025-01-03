@@ -4,12 +4,15 @@ import 'package:virtual_assistant/auth/login.dart';
 import 'package:virtual_assistant/auth/register.dart';
 import 'package:virtual_assistant/beranda.dart';
 import 'package:virtual_assistant/catatan_kesehatan.dart';
+import 'package:virtual_assistant/chatbot_page.dart';
 import 'package:virtual_assistant/deteksi.dart';
 import 'package:virtual_assistant/grafik.dart';
 import 'package:virtual_assistant/layout/second_step.dart';
 import 'package:virtual_assistant/layout/third_step.dart';
 import 'package:virtual_assistant/notifikasi.dart';
 import 'package:virtual_assistant/profile.dart';
+import 'package:virtual_assistant/sentimen_page.dart';
+import 'package:virtual_assistant/splash_profile.dart';
 import 'package:virtual_assistant/splash_screen.dart';
 import 'package:virtual_assistant/layout/first_step.dart';
 
@@ -29,6 +32,9 @@ class AppRoutes {
   static const about = '/about';
   static const sentimen = '/sentimen';
   static const forgot_password = '/forgot-password';
+  static const chat = '/chat';
+  static const feedback = '/feedback';
+  static const settings = '/settings';
 
   static final routes = [
     GetPage(name: splash, page: () => SplashScreen()),
@@ -38,7 +44,10 @@ class AppRoutes {
     GetPage(name: second_step, page: () => const TwoStep()),
     GetPage(name: third_step, page: () => const ThirdStep()),
     GetPage(name: home, page: () => const Beranda()),
-    GetPage(name: forgot_password, page: () => ForgotPassword()),
+    GetPage(name: forgot_password, page: () => const ForgotPassword()),
+    GetPage(name: chat, page: () => const ChatbotPage()),
+    GetPage(name: feedback, page: () => const SentimenPage()),
+    GetPage(name: settings, page: () => Setting()),
     GetPage(
       name: profile,
       page: () => const Profile(),
