@@ -126,11 +126,11 @@ class _SentimenPageState extends State<SentimenPage> {
                   : const Text('Kirim'),
             ),
             if (_sentimentResult != null)
-              Padding(
-                padding: const EdgeInsets.only(top: 20),
+              const Padding(
+                padding: EdgeInsets.only(top: 20),
                 child: Text(
                   'Terima kasih atas ulasan Anda!',
-                  style: const TextStyle(
+                  style: TextStyle(
                       fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ),

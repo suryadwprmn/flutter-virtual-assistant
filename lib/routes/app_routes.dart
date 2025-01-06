@@ -47,7 +47,7 @@ class AppRoutes {
     GetPage(name: forgot_password, page: () => const ForgotPassword()),
     GetPage(name: chat, page: () => const ChatbotPage()),
     GetPage(name: feedback, page: () => const SentimenPage()),
-    GetPage(name: settings, page: () => Setting()),
+    GetPage(name: settings, page: () => const Setting()),
     GetPage(
       name: profile,
       page: () => const Profile(),

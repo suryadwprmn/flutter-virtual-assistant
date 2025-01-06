@@ -54,7 +54,20 @@ class AuthService {
   // Fungsi untuk menyimpan data user
   Future<void> _saveUserData(Map<String, dynamic> userData) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(USER_KEY, jsonEncode(userData));
+    // Print data sebelum disimpan
+    print('Saving user data: $userData');
+
+    // Pastikan data memiliki ID
+    if (userData['id'] == null && userData['user']?['id'] == null) {
+      print('WARNING: No user ID found in data to save');
+    }
+
+    final String userDataString = jsonEncode(userData);
+    await prefs.setString(USER_KEY, userDataString);
+
+    // Verifikasi data tersimpan
+    final savedData = prefs.getString(USER_KEY);
+    print('Verified saved data: $savedData');
   }
 
   // Login method
@@ -225,6 +238,22 @@ class AuthService {
   Future<void> removeUserData() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(USER_KEY);
+  }
+
+  Future<Map<String, dynamic>?> getStoredUserData() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userDataString = prefs.getString(USER_KEY);
+    print('Retrieved stored user data: $userDataString');
+
+    if (userDataString != null) {
+      try {
+        return jsonDecode(userDataString);
+      } catch (e) {
+        print('Error parsing stored user data: $e');
+        return null;
+      }
+    }
+    return null;
   }
 
   // Error handling method

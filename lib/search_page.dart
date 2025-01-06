@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import '../services/food_service.dart';
+import '../services/auth_service.dart';
+import '../services/konsumsi_service.dart';
 import '../model/food_model.dart';
 
 class SearchPage extends StatefulWidget {
@@ -16,6 +18,8 @@ class _SearchPageState extends State<SearchPage> {
   bool isLoading = false;
   bool hasSearched = false;
   final FoodService _foodService = FoodService();
+  final KonsumsiService _konsumsiService = KonsumsiService();
+  final AuthService _authService = AuthService();
   Timer? _debounce;
 
   @override
@@ -67,12 +71,12 @@ class _SearchPageState extends State<SearchPage> {
     });
   }
 
-  void _showFoodDetails(BuildContext context, FoodModel food) {
-    String selectedMealTime = 'Pagi';
-    final List<String> mealTimes = ['Pagi', 'Siang', 'Malam'];
+  void _showFoodDetails(BuildContext context, FoodModel food) async {
+    String selectedMealTime = 'pagi';
+    final List<String> mealTimes = ['pagi', 'siang', 'malam'];
     final TextEditingController gramController = TextEditingController();
-    String estimatedConsumption =
-        "0.0"; // Untuk menampilkan perkiraan konsumsi gula
+    String estimatedConsumption = "0.0";
+    bool isSubmitting = false;
 
     showDialog(
       context: context,
@@ -80,7 +84,7 @@ class _SearchPageState extends State<SearchPage> {
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              title: Text(food.namaMakanan), // Nama makanan dari objek
+              title: Text(food.namaMakanan),
               content: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -94,7 +98,7 @@ class _SearchPageState extends State<SearchPage> {
                     Text('${food.gula} gr'),
                     const Divider(height: 20, thickness: 1),
                     const Text(
-                      'Standarisasi:',
+                      'Waktu Makan: ',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 10),
@@ -103,7 +107,8 @@ class _SearchPageState extends State<SearchPage> {
                       items: mealTimes.map((String time) {
                         return DropdownMenuItem<String>(
                           value: time,
-                          child: Text(time),
+                          child: Text(time.substring(0, 1).toUpperCase() +
+                              time.substring(1)),
                         );
                       }).toList(),
                       onChanged: (String? newValue) {
@@ -114,7 +119,7 @@ class _SearchPageState extends State<SearchPage> {
                     ),
                     const Divider(height: 20, thickness: 1),
                     const Text(
-                      'Konsumsi:',
+                      'Konsumsi: ',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 10),
@@ -131,7 +136,6 @@ class _SearchPageState extends State<SearchPage> {
                           double? input = double.tryParse(value);
                           if (input != null) {
                             setState(() {
-                              // Hitung konsumsi gula berdasarkan masukan
                               double calculatedGula = (food.gula / 100) * input;
                               estimatedConsumption =
                                   calculatedGula.toStringAsFixed(2);
@@ -158,10 +162,61 @@ class _SearchPageState extends State<SearchPage> {
               ),
               actions: [
                 TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text('Tutup'),
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('Batal'),
+                ),
+                ElevatedButton(
+                  onPressed: isSubmitting
+                      ? null
+                      : () async {
+                          if (gramController.text.isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Masukkan jumlah konsumsi'),
+                              ),
+                            );
+                            return;
+                          }
+
+                          setState(() {
+                            isSubmitting = true;
+                          });
+
+                          try {
+                            final double calculatedGula =
+                                double.parse(estimatedConsumption);
+
+                            await _konsumsiService.createKonsumsi(
+                              jumlahKonsumsi: calculatedGula,
+                              waktu: selectedMealTime,
+                            );
+
+                            if (context.mounted) {
+                              Navigator.of(context).pop();
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content:
+                                      Text('Data konsumsi berhasil disimpan'),
+                                ),
+                              );
+                            }
+                          } catch (e) {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Error: $e'),
+                                ),
+                              );
+                            }
+                          } finally {
+                            if (mounted) {
+                              setState(() {
+                                isSubmitting = false;
+                              });
+                            }
+                          }
+                        },
+                  child: Text(isSubmitting ? 'Menyimpan...' : 'Simpan'),
                 ),
               ],
             );
